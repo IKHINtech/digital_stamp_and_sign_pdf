@@ -1,0 +1,72 @@
+{% extends "base_site.html" %} {% block title %} Validity {% endblock title %}
+{% block stylesheets %} {{ super() }} {% endblock stylesheets %} {% block
+content %}
+<div class="right_col" role="main">
+  <div class="row">
+    <div class="col-md-8">
+      <embed
+        src="{{url_for('view_doc', id= data.id)}}"
+        type=""
+        width="800"
+        height="680"
+      />
+    </div>
+    <div class="col-md-4">
+      <h3>Detail Dokumen</h3>
+      <div class="row">
+        <!-- <div class="col-sm-12"> -->
+        <div class="col-sm-6">
+          <h4>Nama Dokumen :</h4>
+        </div>
+        <div class="col-sm-6">
+          <h4>{{data.filename}}</h4>
+        </div>
+        <div class="col-sm-6">
+          <h4>Pemilik :</h4>
+        </div>
+        <div class="col-sm-6">
+          <h4>{{data.doc.name}}</h4>
+        </div>
+        <!-- </div> -->
+      </div>
+      {% if current_user.can(8) %} {% if data.dosen1 == current_user.name %}
+      <a href="{{url_for('stampOne', id = data.id)}}" class="btn btn-success"
+        >Tanda Tangani</a
+      >
+      {% else %}
+      <a href="{{url_for('stampTwo', id = data.id)}}" class="btn btn-success"
+        >Tanda Tangani</a
+      >
+      {% endif %} {% endif %} {% if current_user.can(8) %}
+      <a class="btn btn-warning" href="{{url_for('permintaan')}}">Kembali</a>
+      {% else %}
+      <a class="btn btn-warning" href="{{url_for('diupload')}}">Kembali</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock content %} {% block javascripts %} {{ super()}}
+<!-- Chart.js -->
+<script src="{{ url_for('static', filename='vendors/Chart.js/dist/Chart.min.js') }}"></script>
+<!-- gauge.js -->
+<script src="{{ url_for('static', filename='vendors/gauge.js/dist/gauge.min.js') }}"></script>
+<!-- Skycons -->
+<script src="{{ url_for('static', filename='vendors/skycons/skycons.js') }}"></script>
+<!-- Flot -->
+<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.pie.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.time.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.stack.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.resize.js') }}"></script>
+<!-- Flot plugins -->
+<script src="{{ url_for('static', filename='vendors/flot.orderbars/js/jquery.flot.orderBars.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/flot-spline/js/jquery.flot.spline.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/flot.curvedlines/curvedLines.js') }}"></script>
+<!-- DateJS -->
+<script src="{{ url_for('static', filename='vendors/DateJS/build/date.js') }}"></script>
+<!-- JQVMap -->
+<script src="{{ url_for('static', filename='vendors/jqvmap/dist/jquery.vmap.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/jqvmap/dist/maps/jquery.vmap.world.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/jqvmap/examples/js/jquery.vmap.sampledata.js') }}"></script>
+{% endblock javascripts %}

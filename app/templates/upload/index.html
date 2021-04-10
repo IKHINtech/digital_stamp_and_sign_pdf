@@ -1,0 +1,218 @@
+{% extends "base_site.html" %} {% block title %} HOME {% endblock title %} {%
+block stylesheets %} {{ super() }} {% endblock stylesheets %} {% block content
+%}
+<div class="right_col" role="main">
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="x_panel">
+        <div class="x_title">
+          <h2>Form validation <small>sub title</small></h2>
+          <ul class="nav navbar-right panel_toolbox">
+            <li>
+              <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+            </li>
+            <li class="dropdown">
+              <a
+                href="#"
+                class="dropdown-toggle"
+                data-toggle="dropdown"
+                role="button"
+                aria-expanded="false"
+                ><i class="fa fa-wrench"></i
+              ></a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="#">Settings 1</a></li>
+                <li><a href="#">Settings 2</a></li>
+              </ul>
+            </li>
+            <li>
+              <a class="close-link"><i class="fa fa-close"></i></a>
+            </li>
+          </ul>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          <form
+            class="form-horizontal form-label-left"
+            action="{{ url_for('upload_file') }}"
+            method="POST"
+            enctype="multipart/form-data"
+          >
+            <span class="section">Upload File</span>
+
+            <div class="item form-group">
+              <label
+                class="control-label col-md-3 col-sm-3 col-xs-12"
+                for="name"
+                >Filename <span class="required">*</span>
+              </label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <input
+                  id="name"
+                  class="form-control col-md-7 col-xs-12"
+                  data-validate-length-range="6"
+                  data-validate-words="2"
+                  name="filename"
+                  placeholder="Input filename"
+                  required="required"
+                  type="text"
+                />
+              </div>
+            </div>
+            <div class="item form-group">
+              <label
+                class="control-label col-md-3 col-sm-3 col-xs-12"
+                for="email"
+                >File <span class="required">*</span>
+              </label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <input
+                  type="file"
+                  id="email"
+                  name="file"
+                  required="required"
+                  class="form-control col-md-7 col-xs-12"
+                />
+              </div>
+            </div>
+            <div class="item form-group">
+              <label
+                class="control-label col-md-3 col-sm-3 col-xs-12"
+                for="dosen1"
+                >Dosen Penguji 1 <span class="required">*</span>
+              </label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <input
+                  id="dosen1"
+                  class="form-control col-md-7 col-xs-12"
+                  name="dosen1"
+                  required="required"
+                  type="text"
+                />
+                <ul class="list-group" id="resultlist"></ul>
+              </div>
+            </div>
+            <div class="item form-group">
+              <label
+                class="control-label col-md-3 col-sm-3 col-xs-12"
+                for="name2"
+                >Dosen Penguji 2<span class="required">*</span>
+              </label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <input
+                  id="dosen2"
+                  class="form-control col-md-7 col-xs-12"
+                  name="dosen2"
+                  placeholder=""
+                  required="required"
+                  type="text"
+                />
+                <ul class="list-group" id="resultlist1"></ul>
+              </div>
+            </div>
+            <script>
+              $(document).ready(function () {
+                $.ajaxSetup({ cache: false });
+                $("#dosen1").keyup(function () {
+                  $("#resultlist").html("");
+                  $("#state").val("");
+                  var searchField = $("#dosen1").val();
+                  var expression = new RegExp(searchField, "i");
+
+                  $.getJSON('{{ url_for("namaDosen") }}', function (data) {
+                    $.each(data, function (key, value) {
+                      if (value.name.search(expression) != -1) {
+                        $("#resultlist").append(
+                          `
+                <li class="list-group-item link-class">
+                  <span class="nama">` +
+                            value.name +
+                            `</span>
+                </li>`
+                        );
+                      }
+                    });
+                  });
+                });
+
+                $("#resultlist").on("click", "li", function () {
+                  let nama_mahasiswa = $(this).children(".nama").text();
+
+                  $("#dosen1").val(nama_mahasiswa);
+                  $("#resultlist").html("");
+                });
+              });
+            </script>
+            <script>
+              $(document).ready(function () {
+                $.ajaxSetup({ cache: false });
+                $("#dosen2").keyup(function () {
+                  $("#resultlist1").html("");
+                  $("#state").val("");
+                  var searchField = $("#dosen2").val();
+                  var expression = new RegExp(searchField, "i");
+
+                  $.getJSON('{{ url_for("namaDosen") }}', function (data) {
+                    $.each(data, function (key, value) {
+                      if (value.name.search(expression) != -1) {
+                        $("#resultlist1").append(
+                          `
+                <li class="list-group-item link-class">
+                  <span class="nama">` +
+                            value.name +
+                            `</span>
+                </li>`
+                        );
+                      }
+                    });
+                  });
+                });
+
+                $("#resultlist1").on("click", "li", function () {
+                  let nama_mahasiswa = $(this).children(".nama").text();
+
+                  $("#dosen2").val(nama_mahasiswa);
+                  $("#resultlist1").html("");
+                });
+              });
+            </script>
+            <div class="ln_solid"></div>
+            <div class="form-group">
+              <div class="col-md-6 col-md-offset-3">
+                <button type="submit" class="btn btn-primary">Cancel</button>
+                <button id="send" type="submit" class="btn btn-success">
+                  Submit
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %} {% block javascripts %} {{ super()}}
+<!-- Chart.js -->
+<script src="{{ url_for('static', filename='vendors/Chart.js/dist/Chart.min.js') }}"></script>
+<!-- gauge.js -->
+<script src="{{ url_for('static', filename='vendors/gauge.js/dist/gauge.min.js') }}"></script>
+<!-- Skycons -->
+<script src="{{ url_for('static', filename='vendors/skycons/skycons.js') }}"></script>
+<!-- Flot -->
+<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.pie.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.time.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.stack.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.resize.js') }}"></script>
+<!-- Flot plugins -->
+<script src="{{ url_for('static', filename='vendors/flot.orderbars/js/jquery.flot.orderBars.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/flot-spline/js/jquery.flot.spline.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/flot.curvedlines/curvedLines.js') }}"></script>
+<!-- DateJS -->
+<script src="{{ url_for('static', filename='vendors/DateJS/build/date.js') }}"></script>
+<!-- JQVMap -->
+<script src="{{ url_for('static', filename='vendors/jqvmap/dist/jquery.vmap.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/jqvmap/dist/maps/jquery.vmap.world.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/jqvmap/examples/js/jquery.vmap.sampledata.js') }}"></script>
+{% endblock javascripts %}
