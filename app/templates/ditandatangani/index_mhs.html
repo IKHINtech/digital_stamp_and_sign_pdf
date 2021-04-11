@@ -21,6 +21,7 @@ content %}
         </div>
         {% endfor %}
       </div>
+
       <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
           <div class="x_title">
@@ -71,34 +72,28 @@ content %}
               </thead>
 
               <tbody>
-                {% for i in data %}
+                {% for a, b in file %}
                 <tr>
                   <td>{{ loop.index}}</td>
-                  <td>{{i.sign.filename}}</td>
-                  <td>{{i.sign.doc.name}}</td>
+                  <td>{{b.filename}}</td>
+                  <td>{{b.doc.name}}</td>
                   <td>
-                    1. {{i.sign1}} ({{ moment(i.sign1_date).format('Do MMMM
+                    1. {{a.sign1}} ({{ moment(a.sign1_date).format('Do MMMM
                     YYYY, h:mm:ss a') }}) <br />
-                    2. {{i.sign2}} ({{ moment(i.sign2_date).format('Do MMMM
+                    2. {{a.sign2}} ({{ moment(a.sign2_date).format('Do MMMM
                     YYYY, h:mm:ss a') }}) <br />
-                    3. {{i.sign3}} ({{ moment(i.sign3_date).format('Do MMMM
+                    3. {{a.sign3}} ({{ moment(a.sign3_date).format('Do MMMM
                     YYYY, h:mm:ss a') }})
                     <br />
                   </td>
                   <td>
                     <a
-                      href="{{ url_for('detail_sign_file', id=i.id) }}"
+                      href="{{ url_for('detail_sign_file', id=a.id) }}"
                       class="btn btn-success"
                       >Detail</a
                     >
                   </td>
-                  <td>
-                    <a
-                      class="btn btn-danger"
-                      href="{{ url_for('delete_sign', id=i.id) }}"
-                      >Delete</a
-                    >
-                  </td>
+                  <td></td>
                 </tr>
                 {% endfor %}
               </tbody>

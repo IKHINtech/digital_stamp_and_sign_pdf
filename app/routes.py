@@ -1,5 +1,5 @@
 from app import app,db
-from flask import render_template, request, flash, redirect, url_for, send_file, make_response, jsonify, session
+from flask import render_template, request, flash, redirect, url_for, send_file, make_response, jsonify, session, send_file
 from app.models.File import fileModel, SignTable
 from flask_login import login_required, current_user, logout_user, login_user
 import os
@@ -142,6 +142,10 @@ def upload_file():
 def diupload():
     data = fileModel.query.filter_by(user_id = current_user.id)
     return render_template('/diupload/index.html', a = data )
+@app.route('/download_template')
+def download_template():
+   res = send_file('template.docx', as_attachment= True)
+   return res
 
 #################  VALIDASI  ############################
 @app.route('/validity')
@@ -238,7 +242,9 @@ def sign_file():
 def sign_file_all():
     file = fileModel.query.filter_by(user_id = current_user.id).first_or_404()
     data = SignTable.query.filter_by(file_id = file.id)
-    return render_template('/ditandatangani/index_mhs.html', data = data)
+    jo = db.session.query(SignTable,fileModel ).join(fileModel). \
+        filter(fileModel.user_id == current_user.id)
+    return render_template('/ditandatangani/index_mhs.html', data = data, file = jo)
 
 
 @app.route('/stamp2/<id>', methods=['GET','POST'])
