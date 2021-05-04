@@ -249,7 +249,7 @@ def valid():
             l = []
             sig = r.embedded_signatures
             for i, item in enumerate(sig):
-                status = validate_pdf_signature(item, vc, diff_policy=DEFAULT_DIFF_POLICY)
+                status = validate_pdf_signature(item, vc)
                 hasil  = pretty(status)
                 l.append(hasil)
                 a = status.signing_cert.subject.human_friendly
@@ -257,7 +257,7 @@ def valid():
                 # return x
             return render_template('/validity/result.html', data =l )
         except Exception as e:
-            flash('{} dokumen tidak memiliki tanda tangan'.format(e), 'danger')
+            flash('dokumen tidak memiliki tanda tangan atau dokumen telah dimodifikasi', 'danger')
             return redirect(url_for('dashboard'))  
         return render_template('/validity/result.html', data = hasil, a = a)
 
@@ -413,7 +413,7 @@ def stampTwo(id):
                     name= current_user.name, password='rahasia',page=int(file.page-1), x = x, y= y)
                 # buat_qr(back_g, path1,path2, 'http://127.0.0.1:5000/sign/detail/'+file.filename+'/'+current_user.name+'/'+file.doc.name+'/'+datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S %a')  ,current_user.name,0,x, y)# 330, 325)
             except Exception as err:
-                flash(str(err+'Penguji Pertama Belum Tanda Tangan'), 'danger')
+                flash(str('Penguji Pertama Belum Tanda Tangan'), 'danger')
                 return redirect(url_for('permintaan'))
             with open(path2, 'rb') as doc:
                 file_id_data = file.id
@@ -475,7 +475,7 @@ def stampThree(id):
                 #     flash(str(err), 'danger')
                 #     return redirect(url_for('permintaan'))
             except Exception as err:
-                flash(str(err), 'danger')
+                flash(str('Penguji Kedua Belum Tanda Tangan'), 'danger')
                 return redirect(url_for('permintaan'))
             with open(path2, 'rb') as doc:
                 file_id_data = file.id
