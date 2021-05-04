@@ -1,0 +1,181 @@
+{% extends "base_site.html" %}
+
+{% block title %} Signature {% endblock title %}
+
+{% block stylesheets %}
+  {{ super() }}
+  <!-- <link
+      href="{{ url_for('static', filename='signature/sign.css') }}"
+      rel="stylesheet"
+    /> -->
+{% endblock stylesheets %}
+
+{% block content %}
+  <div class="right_col" role="main">
+    <div class="">
+      <div class="page-title">
+        <div class="title_left">
+          <h3>User Signature</h3>
+        </div>
+        <div class="title_right">
+          <div class="col-md-12">
+            <!-- message -->
+            {% for category, message in get_flashed_messages(with_categories=true)
+            %}
+            <div
+              class="alert alert-{{ category }} alert-dismissible "
+              role="alert"
+            >
+              <button
+                type="button"
+                class="close"
+                data-dismiss="alert"
+                aria-label="Close"
+              >
+                <span aria-hidden="true">×</span>
+              </button>
+              <strong>{{ category }}</strong> {{ message }}
+            </div>
+            {% endfor %}
+            <!-- message -->
+          </div>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+      <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+          <div class="x_panel">
+            <div class="x_title">
+              <ul class="nav navbar-right panel_toolbox">
+                <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                </li>
+                <li class="dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                  <ul class="dropdown-menu" role="menu">
+                    <li><a href="#">Settings 1</a>
+                    </li>
+                    <li><a href="#">Settings 2</a>
+                    </li>
+                  </ul>
+                </li>
+                <li><a class="close-link"><i class="fa fa-close"></i></a>
+                </li>
+              </ul>
+              <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+              <div class="col-md-3 col-sm-3 col-xs-12 profile_left">
+                <div class="row">
+                  <div class="profile_img">
+                    <div id="crop-avatar">
+                      <!-- <div class="profile_title"> -->
+
+                        <h2 >Current Signature </h2>
+                      <!-- </div> -->
+                    {% if current_user.signature is none %}
+                      <img class="img-responsive avatar-view " src="{{ url_for('static', filename='images/signature.png')}}" alt="Avatar" title="User Avatar">
+                      {% else %}
+                      <!-- Current avatar -->
+                      <img class="img-responsive avatar-view " src="{{ url_for('static', filename='uploads/signature/')}}{{ current_user.signature }}" alt="Avatar" title="User Avatar">
+                    {% endif %}
+                    </div>
+                  </div>
+                </div>
+                <br>
+                <div class="row">
+                    <a class="btn btn-info" data-toggle="modal" data-target=".bs-example-modal-md"><i class="fa fa-upload m-right-xs"></i> Change Signature</a>
+                </div>
+              </div>
+              <div class="col-md-9 col-sm-9 col-xs-12">
+                <!-- <div class="profile_title"> -->
+                  <div class="col-md-12">
+                    <h2>Create Signature</h2>
+                  </div>
+                  <div class="col-md-6">
+                  <!-- </div> -->
+                </div>
+                <div class="col-md-10">
+                  <div id="signature-pad" class="signature-pad">
+                    <div class="signature-pad--body">
+                      <canvas width="664" style="touch-action: none; border:1px solid #0ed1be;" height="321"></canvas>
+                    </div>
+                    <div class="signature-pad--footer">
+                      <div class="description">Sign above</div>
+
+                      <div class="text-center">
+                        <div>
+                          <button type="button" class="btn btn-warning" data-action="clear">Clear</button>
+                          <button type="button" class="btn btn-info" data-action="change-color">Change color</button>
+                          <button type="button" class="btn btn-danger" data-action="undo">Undo</button>
+
+                        </div>
+                        <div>
+                          <button type="button" class="btn btn-success" data-action="save-png">Save as PNG</button>
+                          <button type="button" class="btn btn-info" data-action="save-jpg">Save as JPG</button>
+                          <button type="button" class="btn btn-info" data-action="save-svg">Save as SVG</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                    <div class="x_content">
+                      <div
+                        class="modal fade bs-example-modal-md"
+                        tabindex="-1"
+                        role="dialog"
+                        aria-hidden="true"
+                        style="display: none"
+                      >
+                        <div class="modal-dialog modal-md">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h4 class="modal-title" id="myModalLabel">Edit</h4>
+                              <button type="button" class="close" data-dismiss="modal">
+                                <span aria-hidden="true">×</span>
+                              </button>
+                            </div>
+                            <div class="modal-body">
+                              <form method="POST" action="{{url_for('upload_sign', id = current_user.id)}}" enctype="multipart/form-data" id="demo-form2" data-parsley-validate="" class="form-horizontal form-label-left">
+                                <!-- KTP -->
+                                <div class="item form-group">
+                                  <label class="col-form-label col-md-3 col-sm-3 label-align" for="ktp" >Signature<span
+                                      class="required">*</span>
+                                  </label>
+                                  <div class="col-md-6 col-sm-6 ">
+                                    <input name="signature" type="file" class="form-control " required="true" accept=".jpg,.png,.jpeg">
+                                  </div>
+                                </div>                              
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                Close
+                              </button>
+                              <button type="submit" class="btn btn-primary">
+                                Save changes
+                              </button>
+                            </div>
+                            </form>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='signature/sign.js') }}"></script>
+  <script src="{{ url_for('static', filename='signature/app_sign.js') }}"></script>
+
+{% endblock content %}
+
+{% block javascripts %}
+  {{ super() }}
+  <!-- morris.js -->
+  <script src="{{ url_for('static', filename='vendors/raphael/raphael.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='vendors/morris.js/morris.min.js') }}"></script>
+{% endblock javascripts %}

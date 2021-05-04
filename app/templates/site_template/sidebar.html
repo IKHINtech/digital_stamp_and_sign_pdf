@@ -1,7 +1,8 @@
 <div class="left_col scroll-view">
   <div class="navbar nav_title" style="border: 0">
-    <a href="" class="site_title"
-      ><i class="fa fa-pencil"></i> <span>TandaTangani</span></a
+    <a href="" class="site_title">
+      <!-- <img  height="80" src="{{ url_for('static', filename='images/logo-digi.png') }}" alt=""> -->
+      <i class="fas fa-signature"></i> <span>UPB DigiSign</span></a
     >
   </div>
 
@@ -10,11 +11,19 @@
   <!-- menu profile quick info -->
   <div class="profile clearfix">
     <div class="profile_pic">
+      {% if current_user.p_profile is none %}
       <img
-        src="{{ current_user.gravatar(size=100) }}"
+        src="{{ url_for('static', filename='images/user.png')}}"
         alt="..."
         class="img-circle profile_img"
       />
+      {% else %}
+      <img
+        src="{{ url_for('static', filename='uploads/')}}{{ current_user.p_profile }}"
+        alt="..."
+        class="img-circle profile_img"
+      />
+      {% endif %}
     </div>
     <div class="profile_info">
       <span>{{ current_user.name }}</span>
@@ -31,12 +40,14 @@
       <h3>General</h3>
       <ul class="nav side-menu">
         <li>
-          <a href="/"><i class="fa fa-home"></i> Home </a>
+          <a href="/dashboard"><i class="fa fa-home"></i> Home </a>
         </li>
-        {% if current_user.can(8) %}
+        {% if current_user.role.name=='Dosen' or current_user.role.name=='Prodi'
+        %}
         <li>
           <a href="{{url_for('permintaan')}}"
             ><i class="fa fa-bell-o"></i> Permintaan
+            <span id="notif" class="badge bg-red"></span>
           </a>
         </li>
         <li>
@@ -61,8 +72,71 @@
             </li>
           </ul>
         </li>
+        {% endif %} {% if current_user.role.name=='Administrator' %}
+        <li>
+          <a
+            ><i class="fa fa-user"></i> Admin
+            <span class="fa fa-chevron-down"></span
+          ></a>
+          <ul class="nav child_menu">
+            <li>
+              <a href="{{url_for('all_mhs')}}">Data Mahasiswa</a>
+            </li>
+            <li><a href="{{url_for('all_dosen')}}">Data Dosen</a></li>
+            <li>
+              <a href="{{url_for('all_prodi')}}">Data Prodi</a>
+            </li>
+          </ul>
+        </li>
         {% endif %}
+        <li>
+          <a href="#"
+            ><i class="fa fa-gear"></i> Settings
+            <span class="fa fa-chevron-down"></span>
+          </a>
+          <ul class="nav child_menu">
+            {% if current_user.role.name=='Administrator' %}
+            <li><a href="{{url_for('template')}}">Template</a></li>
+            {% endif %} {% if current_user.role.name =='Dosen' or
+            current_user.role.name =='Prodi' %}
+            <li>
+              <a href="{{url_for('signature', id = current_user.id)}}"
+                >Tanda Tangan</a
+              >
+            </li>
+
+            <li>
+              <a href="{{url_for('sertifikat', id = current_user.id)}}"
+                >Sertifikat</a
+              >
+            </li>
+            {% endif %}
+          </ul>
+        </li>
       </ul>
+      <script>
+        fetch('{{ url_for("notif") }}').then(function (res) {
+          if (res.status !== 200) {
+            console.log("hahaha" + res.status);
+            return;
+          }
+          res.json().then(function (data) {
+            console.log(data.total);
+            console.log(data.prodi);
+            if (data.total !== 0) {
+              {% if current_user.role.name=='Dosen' %}
+              document.getElementById("notif").innerHTML = data.total;
+              {% endif %}
+            }else{
+              {% if current_user.role.name=='Prodi' %}
+              if(data.prodi !== 0){
+              document.getElementById("notif").innerHTML = data.prodi;
+              }
+              {% endif %}
+            }
+          });
+        });
+      </script>
     </div>
   </div>
   <!-- /sidebar menu -->

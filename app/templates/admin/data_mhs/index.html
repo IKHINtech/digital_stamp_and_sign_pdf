@@ -1,0 +1,185 @@
+{% extends "base_site.html" %} {% block title %} Data Mahasiswa {% endblock
+title %} {% block stylesheets %} {{ super() }} {% endblock stylesheets %} {%
+block content %}
+<div class="right_col" role="main">
+  <div class="">
+      <div class="page-title">
+        <!-- <div class="title_left"> -->
+        <!--breadcrumb -->
+        <!-- <ol class="breadcrumb">
+          <li><a href="#">Karyawan</a></li>
+          <li><a href="#">Address</a></li>
+        </ol> -->
+      <!--breadcrumb -->
+        <!-- </div> -->
+        <!-- <div class="title_right"> -->
+          <div class="col-md-12">
+            <!-- message -->
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+            <div class="alert alert-{{ category }} alert-dismissible " role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
+              </button>
+              <strong>{{ message }}</strong> 
+            </div>
+            {% endfor %}
+            <!-- message -->
+        <!-- </div> -->
+      </div>
+      <div class="x_panel">
+        <div class="x_title">
+          <h2><i class="fa fa-cog"></i> Opsi</h2>
+          
+          <ul class="nav navbar-right panel_toolbox">
+            <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+            </li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+              <ul class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(-5px, 30px, 0px);">
+                <li><a class="dropdown-item" href="#">Department</a>
+                </li>
+                <li><a class="dropdown-item" href="#">Jobs</a>
+                </li>
+                <li><a class="dropdown-item" href="#">Country</a>
+                </li>
+                <li><a class="dropdown-item" href="#">Address</a>
+                </li>
+              </ul>
+            </li>
+            <li><a class="close-link"><i class="fa fa-close"></i></a>
+            </li>
+          </ul>
+          <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg">Tambah Mahasiswa</button>
+          <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true" style="display: none;">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="myModalLabel">Tambah Data</h4>
+                  <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="x_panel">
+                    <div class="x_content">
+                      <br>
+                      <form method="POST" action="{{url_for('add_mhs')}}" id="demo-form2" data-parsley-validate="" class="form-horizontal form-label-left" enctype="multipart/form-data">
+                        <div class="item form-group">
+                          <label class="col-form-label col-md-3 col-sm-3 label-align" for="first-name" >Name <span
+                              class="required">*</span>
+                          </label>
+                          <div class="col-md-6 col-sm-6 ">
+                            <input name="name" type="text" class="form-control " required="true">
+                          </div>
+                        </div>
+                        <div class="item form-group">
+                          <label class="col-form-label col-md-3 col-sm-3 label-align" for="first-name" >NIM<span
+                              class="required">*</span>
+                          </label>
+                          <div class="col-md-6 col-sm-6 ">
+                            <input name="nomor" type="text" class="form-control " required="true">
+                          </div>
+                        </div>
+                        <div class="item form-group">
+                          <label class="col-form-label col-md-3 col-sm-3 label-align" for="last-name">Email<span
+                              class="required">*</span>
+                          </label>
+                          <div class="col-md-6 col-sm-6 ">
+                            <input name="email" type="email" class="form-control" required="true">
+                          </div>
+                        </div>
+                        <div class="item form-group">
+                          <label class="col-form-label col-md-3 col-sm-3 label-align" for="last-name">Photo<span
+                              class="required">*</span>
+                          </label>
+                          <div class="col-md-6 col-sm-6 ">
+                            <input name="photo" type="file" class="form-control" required="true" accept=".jpg,.png,.jpeg">
+                          </div>
+                        </div>
+                                  
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <input type="submit" class="btn btn-primary"></input>
+                </div>
+              </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="row">
+          <div class="col-sm-12">
+            <div class="card-box table-responsive">
+              <div id="datatable-buttons_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap no-footer">
+                <table id="datatable-buttons" class="table table-striped table-bordered dataTable no-footer dtr-inline"
+                  style="width: 100%;" role="grid" aria-describedby="datatable-buttons_info">
+                  <thead>
+                    <tr role="row">
+                      <th>No</th>
+                      <th >Name
+                      </th>
+                      <th >NIM</th>
+                      <th >Email</th>
+                      <!-- <th >Photo</th> -->
+                     
+                      <!-- <th >Action</th> -->
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for i in data %}
+                    <tr role="row" class="odd">
+                      <td>{{loop.index}}</td>
+                      <td tabindex="0" class="sorting_1">{{i.name}}</td>
+                      <td>{{i.nomor}}</td>
+                      <td>{{i.email}}</td>
+                      <!-- <td>
+                        {% if i.p_profile is none %}
+                        <img height="80" src="{{ url_for('static', filename='images/user.png')}}" alt=""></td>
+                        {% else %}
+                        <img height="80" src="{{ url_for('static', filename='uploads/')}}{{i.p_profile}}" alt=""></td>
+                      {% endif %} -->
+                      <!-- <td class="center"><a class="btn btn-primary" href="#">Edit</a>
+                        <a  class="btn btn-danger" href="{{url_for('delete_mahasiswa', id = i.id)}}">delete</a></td>-->
+                    </tr> 
+                   {% endfor %}
+                  </tbody>
+                </table>
+                
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+{% endblock content %} {% block javascripts %} {{ super()}}
+<!-- Chart.js -->
+<script src="{{ url_for('static', filename='vendors/Chart.js/dist/Chart.min.js') }}"></script>
+<!-- gauge.js -->
+<script src="{{ url_for('static', filename='vendors/gauge.js/dist/gauge.min.js') }}"></script>
+<!-- Skycons -->
+<script src="{{ url_for('static', filename='vendors/skycons/skycons.js') }}"></script>
+<!-- Flot -->
+<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.pie.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.time.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.stack.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.resize.js') }}"></script>
+<!-- Flot plugins -->
+<script src="{{ url_for('static', filename='vendors/flot.orderbars/js/jquery.flot.orderBars.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/flot-spline/js/jquery.flot.spline.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/flot.curvedlines/curvedLines.js') }}"></script>
+<!-- DateJS -->
+<script src="{{ url_for('static', filename='vendors/DateJS/build/date.js') }}"></script>
+<!-- JQVMap -->
+<script src="{{ url_for('static', filename='vendors/jqvmap/dist/jquery.vmap.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/jqvmap/dist/maps/jquery.vmap.world.js') }}"></script>
+<script src="{{ url_for('static', filename='vendors/jqvmap/examples/js/jquery.vmap.sampledata.js') }}"></script>
+{% endblock javascripts %}

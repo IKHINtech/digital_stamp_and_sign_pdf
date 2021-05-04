@@ -3,45 +3,24 @@
 content %}
 <div class="right_col" role="main">
   <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-12">
       <embed
         src="{{url_for('view_doc', id= data.id)}}"
         type=""
-        width="800"
+        width="1300"
         height="680"
       />
     </div>
-    <div class="col-md-4">
-      <h3>Detail Dokumen</h3>
-      <div class="row">
-        <!-- <div class="col-sm-12"> -->
-        <div class="col-sm-6">
-          <h4>Nama Dokumen :</h4>
-        </div>
-        <div class="col-sm-6">
-          <h4>{{data.filename}}</h4>
-        </div>
-        <div class="col-sm-6">
-          <h4>Pemilik :</h4>
-        </div>
-        <div class="col-sm-6">
-          <h4>{{data.doc.name}}</h4>
-        </div>
-        <!-- </div> -->
+    <div class="row">
+      <div class="col-md-4"></div>
+      <div class="col-md-4">
+        <!-- {% if current_user.can(8) %}
+        <a class="btn btn-warning" href="{{url_for('permintaan')}}">Kembali</a>
+        {% else %}
+        <a class="btn btn-warning" href="{{url_for('diupload')}}">Kembali</a>
+        {% endif %} -->
       </div>
-      {% if current_user.can(8) %} {% if data.dosen1 == current_user.name %}
-      <a href="{{url_for('stampOne', id = data.id)}}" class="btn btn-success"
-        >Tanda Tangani</a
-      >
-      {% else %}
-      <a href="{{url_for('stampTwo', id = data.id)}}" class="btn btn-success"
-        >Tanda Tangani</a
-      >
-      {% endif %} {% endif %} {% if current_user.can(8) %}
-      <a class="btn btn-warning" href="{{url_for('permintaan')}}">Kembali</a>
-      {% else %}
-      <a class="btn btn-warning" href="{{url_for('diupload')}}">Kembali</a>
-      {% endif %}
+      <div class="col-md-4"></div>
     </div>
   </div>
 </div>

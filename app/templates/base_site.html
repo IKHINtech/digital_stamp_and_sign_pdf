@@ -19,7 +19,7 @@
     <!-- Meta, title, CSS, favicons, etc. -->
     <link
       rel="icon"
-      href="{{ url_for('static', filename='images/favicon.ico') }}"
+      href="{{ url_for('static', filename='images/fav.png') }}"
       type="image/ico"
     />
     <meta charset="utf-8" />
@@ -27,7 +27,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     {% endblock meta %}
 
-    <title>TandaTangani | {% block title %}{% endblock %}</title>
+    <title>UPB DigiSign | {% block title %}{% endblock %}</title>
 
     {% block stylesheets %}
     <!-- Bootstrap -->
@@ -39,6 +39,11 @@
     <link
       href="{{ url_for('static', filename='vendors/font-awesome/css/font-awesome.min.css') }}"
       rel="stylesheet"
+    />
+    <link
+      href="{{ url_for('static', filename='vendors/font-awesome/css/all.min.css') }}"
+      rel="stylesheet"
+      type="text/css"
     />
     <!-- NProgress -->
     <link

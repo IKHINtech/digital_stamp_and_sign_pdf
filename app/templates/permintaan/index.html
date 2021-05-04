@@ -1,4 +1,4 @@
-{% extends "base_site.html" %} {% block title %} Validity {% endblock title %}
+{% extends "base_site.html" %} {% block title %} Permintaan {% endblock title %}
 {% block stylesheets %} {{ super() }} {% endblock stylesheets %} {% block
 content %}
 <div class="right_col" role="main">
@@ -88,7 +88,11 @@ content %}
                     >
                   </td>
                   <td>
-                    <a href="#" class="btn btn-danger">Tanda Tangani</a>
+                    <a
+                      href="{{ url_for('view_bytes', id=i.id) }}"
+                      class="btn btn-danger"
+                      >Tanda Tangani</a
+                    >
                   </td>
                 </tr>
                 {% endfor %}
@@ -150,6 +154,7 @@ content %}
                   <td>{{ loop.index}}</td>
                   <td>{{c.doc.name}}</td>
                   <td>{{c.filename}}</td>
+
                   <td>
                     {{ moment(c.date_upload).format('Do MMMM YYYY, h:mm:ss a')
                     }}
@@ -163,7 +168,11 @@ content %}
                     >
                   </td>
                   <td>
-                    <a href="#" class="btn btn-danger">Tanda Tangani</a>
+                    <a
+                      href="{{ url_for('view_bytes', id=c.id) }}"
+                      class="btn btn-danger"
+                      >Tanda Tangani</a
+                    >
                   </td>
                 </tr>
                 {% endfor %}
@@ -207,6 +216,9 @@ content %}
               do to use it with your own tables is to call the construction
               function: <code>$().DataTable();</code>
             </p> -->
+            {% if data3 == none %}
+            <h1>Tidak Ada Permintaan</h1>
+            {% else %}
             <table id="datatable" class="table table-striped table-bordered">
               <thead>
                 <tr>
@@ -221,29 +233,34 @@ content %}
               </thead>
 
               <tbody>
-                {% for c in data3 %}
+                {% for x, y in data3 %}
                 <tr>
                   <td>{{ loop.index}}</td>
-                  <td>{{c.sign.doc.name}}</td>
-                  <td>{{c.sign.filename}}</td>
+                  <td>{{x.sign.doc.name}}</td>
+                  <td>{{x.sign.filename}}</td>
                   <td>
-                    {{ moment(c.date).format('Do MMMM YYYY, h:mm:ss a') }}
+                    {{ moment(x.date).format('Do MMMM YYYY, h:mm:ss a') }}
                   </td>
-                  <td>1. {{c.sign1 }}<br />2. {{c.sign2}}</td>
+                  <td>1. {{x.sign1 }}<br />2. {{x.sign2}}</td>
                   <td>
                     <a
-                      href="{{ url_for('detail_sign_file', id=c.id) }}"
+                      href="{{ url_for('detail_sign_file', id=x.id) }}"
                       class="btn btn-success"
                       >Detail</a
                     >
                   </td>
                   <td>
-                    <a href="#" class="btn btn-danger">Tanda Tangani</a>
+                    <a
+                      href="{{ url_for('view_bytes_sign', id=x.id) }}"
+                      class="btn btn-danger"
+                      >Tanda Tangani</a
+                    >
                   </td>
                 </tr>
                 {% endfor %}
               </tbody>
             </table>
+            {% endif %}
           </div>
         </div>
       </div>

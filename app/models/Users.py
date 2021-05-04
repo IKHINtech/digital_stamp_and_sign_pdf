@@ -74,6 +74,11 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(64), unique=True, index=True)
     nomor = db.Column(db.String(64), unique=True, index=True)
     name = db.Column(db.String(64), index=True)
+    p_profile = db.Column(db.String(128), index=True)
+    signature = db.Column(db.String(128), index=True)
+    sertifikat = db.Column(db.String(128), index=True)
+    key_sertifikat = db.Column(db.String(128), index=True)
+    password_sertifikat = db.Column(db.String(128))
     password_hash = db.Column(db.String(128))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     avatar_hash = db.Column(db.String(32))
@@ -82,7 +87,7 @@ class User(UserMixin, db.Model):
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         if self.role is None:
-            if self.email == app.config['FLASKY_ADMIN']:
+            if self.email == app.config['DIGISIGN_ADMIN']: 
                 self.role = Role.query.filter_by(name='Administrator').first()
             if self.role is None:
                 self.role = Role.query.filter_by(default_role_name=True).first()

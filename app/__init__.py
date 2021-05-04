@@ -4,6 +4,7 @@ from config import Config
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_moment import Moment
+from flask_cors import CORS
 
 app = Flask(__name__, static_folder="static")
 app.config.from_object(Config)
@@ -15,8 +16,10 @@ login_manager.login_view = 'login'
 # login_manager.needs_refresh_message = (u"Session timedout, please re-login")
 # login_manager.needs_refresh_message_category = "info"
 login_manager.init_app(app)
-migrate = Migrate(app, db)
+migrate = Migrate(app, db, render_as_batch= True)
+cors = CORS(app)
 
 
 from app import routes
+from app import errors
 from app.models import File, Users

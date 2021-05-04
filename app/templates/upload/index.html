@@ -72,6 +72,24 @@ block stylesheets %} {{ super() }} {% endblock stylesheets %} {% block content
                   name="file"
                   required="required"
                   class="form-control col-md-7 col-xs-12"
+                  accept=".pdf"
+                />
+              </div>
+            </div>
+            <div class="item form-group">
+              <label
+                class="control-label col-md-3 col-sm-3 col-xs-12"
+                for="email"
+                >Halaman <span class="required">*</span>
+              </label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <input
+                  type="number"
+                  id="page"
+                  name="page"
+                  required="required"
+                  class="form-control col-md-7 col-xs-12"
+                  accept=".pdf"
                 />
               </div>
             </div>
@@ -108,6 +126,24 @@ block stylesheets %} {{ super() }} {% endblock stylesheets %} {% block content
                   type="text"
                 />
                 <ul class="list-group" id="resultlist1"></ul>
+              </div>
+            </div>
+            <div class="item form-group">
+              <label
+                class="control-label col-md-3 col-sm-3 col-xs-12"
+                for="name2"
+                >Prodi<span class="required">*</span>
+              </label>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <input
+                  id="dosen3"
+                  class="form-control col-md-7 col-xs-12"
+                  name="dosen3"
+                  placeholder=""
+                  required="required"
+                  type="text"
+                />
+                <ul class="list-group" id="resultlist2"></ul>
               </div>
             </div>
             <script>
@@ -173,6 +209,39 @@ block stylesheets %} {{ super() }} {% endblock stylesheets %} {% block content
 
                   $("#dosen2").val(nama_mahasiswa);
                   $("#resultlist1").html("");
+                });
+              });
+            </script>
+            <script>
+              $(document).ready(function () {
+                $.ajaxSetup({ cache: false });
+                $("#dosen3").keyup(function () {
+                  $("#resultlist2").html("");
+                  $("#state").val("");
+                  var searchField = $("#dosen3").val();
+                  var expression = new RegExp(searchField, "i");
+
+                  $.getJSON('{{ url_for("namaProdi") }}', function (data) {
+                    $.each(data, function (key, value) {
+                      if (value.name.search(expression) != -1) {
+                        $("#resultlist2").append(
+                          `
+                <li class="list-group-item link-class">
+                  <span class="nama">` +
+                            value.name +
+                            `</span>
+                </li>`
+                        );
+                      }
+                    });
+                  });
+                });
+
+                $("#resultlist2").on("click", "li", function () {
+                  let nama_mahasiswa = $(this).children(".nama").text();
+
+                  $("#dosen3").val(nama_mahasiswa);
+                  $("#resultlist2").html("");
                 });
               });
             </script>

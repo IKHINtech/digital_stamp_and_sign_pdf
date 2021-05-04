@@ -1,6 +1,6 @@
-{% extends "base_site.html" %} {% block title %} Validity {% endblock title %}
-{% block stylesheets %} {{ super() }} {% endblock stylesheets %} {% block
-content %}
+{% extends "base_site.html" %} {% block title %} Ditanda Tangani {% endblock
+title %} {% block stylesheets %} {{ super() }} {% endblock stylesheets %} {%
+block content %}
 <div class="right_col" role="main">
   <!-- {{data}} -->
   <div class="">
@@ -77,7 +77,6 @@ content %}
                   <td>{{ loop.index}}</td>
                   <td>{{i.sign.doc.name}}</td>
                   <td>{{i.sign.filename}}</td>
-
                   <td>
                     1. {{i.sign1}} ({{ moment(i.sign1_date).format('Do MMMM
                     YYYY, h:mm:ss a') }}) <br />
@@ -102,7 +101,7 @@ content %}
                     >
                   </td>
                 </tr>
-                {% endfor %}
+                {% endfor %} {{err}}
               </tbody>
             </table>
           </div>

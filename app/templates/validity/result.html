@@ -1,7 +1,12 @@
 {% extends "base_site.html" %} {% block title %} Validity {% endblock title %}
 {% block stylesheets %} {{ super() }} {% endblock stylesheets %} {% block
 content %}
-<div class="right_col" role="main">{{data}}</div>
+<div class="right_col" role="main">
+  {% for x in data %}
+  <h4>Tanda Tangan {{loop.index}} <br />{{x}}</h4>
+
+  {% endfor %}
+</div>
 
 {% endblock content %} {% block javascripts %} {{ super()}}
 <!-- Chart.js -->

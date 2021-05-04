@@ -3,32 +3,18 @@
 content %}
 <div class="right_col" role="main">
   <div class="row">
-    <div class="col-md-8">
+    <div class="col-sm-12">
       <embed
         src="{{url_for('view_doc_sign', id= data.id)}}"
         type=""
-        width="800"
+        width="1200"
         height="680"
       />
     </div>
-    <div class="col-md-4">
-      <h3>Detail Dokumen</h3>
-      <div class="row">
-        <!-- <div class="col-sm-12"> -->
-        <div class="col-sm-6">
-          <h4>Nama Dokumen :</h4>
-        </div>
-        <div class="col-sm-6">
-          <h4></h4>
-        </div>
-        <div class="col-sm-6">
-          <h4>Pemilik :</h4>
-        </div>
-        <div class="col-sm-6">
-          <h4></h4>
-        </div>
-        <!-- </div> -->
-      </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-4"></div>
+    <div class="col-sm-4">
       {% if current_user.can(8) %}
       <a href="{{url_for('stampThree', id = data.id)}}" class="btn btn-success"
         >Tanda Tangani</a
@@ -39,6 +25,7 @@ content %}
       <a class="btn btn-warning" href="{{url_for('sign_file_all')}}">Kembali</a>
       {% endif %}
     </div>
+    <div class="col-sm-4"></div>
   </div>
 </div>
 

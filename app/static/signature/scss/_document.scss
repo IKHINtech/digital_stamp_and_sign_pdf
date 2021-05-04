@@ -1,0 +1,112 @@
+.document {
+	&-container {
+		min-height: 100%;
+		margin: 40px 5px 20px;
+		canvas {
+			display: block;
+			margin-left: auto;
+			margin-right: auto;
+			margin-bottom: 20px;
+			background-color: $white;
+			&:last-child {
+				margin-bottom: 0;
+			}
+		}
+		.digital-signature {
+			position: absolute;
+			margin-left: 20px;
+			padding: 20px;
+			display: inline-block;
+			@include transform(translate(0, 0));
+			img {
+				max-width: 150px;
+				height: auto;
+			}
+			&--remove {
+				&::before {
+					content: 'x';
+					position: absolute;
+					top: -11px;
+					right: -11px;
+					width: 22px;
+					height: 22px;
+					text-align: center;
+					font-size: 12px;
+					line-height: 20px;
+					@include border-radius(50%);
+					background-color: $danger;
+					color: $white;
+				}
+				&:hover {
+					cursor: pointer;
+				}
+			}
+		}
+	}
+	&-toolbar {
+		padding: 9px 20px 10px;
+		border-left: 1px solid darken($white, 5%);
+		border-bottom: 1px solid darken($white, 5%);
+		box-sizing: border-box;
+		background-color: darken($white, 2%);
+		&-sticky {
+			position: fixed;
+			z-index: 1020;
+			top: 0;
+			left: 250px;
+			width: calc(100% - 250px);
+		}
+		.go-page {
+			position: relative;
+			display: inline-block;
+			input[type="number"] {
+				height: 26px;
+				width: 40px;
+				text-align: center;
+				border: none;
+				border-bottom: 1px solid $primary;
+				background-color: transparent;
+				-moz-appearance: textfield;
+				&::-webkit-inner-spin-button,
+				&::-webkit-outer-spin-button {
+					-webkit-appearance: none;
+				}
+				&:focus {
+					outline: none;
+				}
+			}
+			.arrow-dropup,
+			.arrow-dropdown {
+				position: absolute;
+				right: 0;
+				width: 15px;
+				height: 12px;
+				padding: 0;
+				text-align: center;
+				line-height: 12px;
+				border: none;
+				background-color: transparent;
+				&:focus {
+					outline: none;
+				}
+				ion-icon {
+					font-size: 18px;
+					position: absolute;
+					left: calc(50% - 9px);
+				}
+			}
+			.arrow-dropup {
+				top: 0;
+				ion-icon {
+					bottom: -5px;
+				}
+			}
+			.arrow-dropdown {
+				bottom: 1px;
+				ion-icon {
+					top: -5px;
+				}
+			}
+		}
+	}
+}

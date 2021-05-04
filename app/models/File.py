@@ -9,13 +9,16 @@ class fileModel(db.Model):
     __tablename__ = 'files'
     id = db.Column(db.Integer, primary_key = True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    filename = db.Column(db.String(128))
+    filename = db.Column(db.String(128), unique=True)
     date_upload= db.Column(db.DateTime(), index=True, default=datetime.utcnow)
+    page = db.Column(db.Integer)
     file = db.Column(db.LargeBinary())
     dosen1 = db.Column(db.String(128))
     dosen1_sign = db.Column(db.Boolean, default=False, nullable= False)
     dosen2 = db.Column(db.String(128))
     dosen2_sign = db.Column(db.Boolean, default=False, nullable= False)
+    dosen3 = db.Column(db.String(128))
+    dosen3_sign = db.Column(db.Boolean, default=False, nullable= False)
     sign = db.relationship('SignTable', backref='sign', lazy='dynamic')#child of user
     def __repr__(self):
         return "<fileModel %r>" % self.filename

@@ -25,8 +25,6 @@ block stylesheets %} {{ super() }}
 <!-- Login -->
 <script src="{{ url_for('static', filename='build/js/login.js') }}"></script>
 <div>
-  <a class="hiddenanchor" id="signup"></a>
-  <a class="hiddenanchor" id="signin"></a>
   <div class="login_wrapper">
     <div class="animate form login_form">
       <section class="login_content">
@@ -38,23 +36,74 @@ block stylesheets %} {{ super() }}
             data-dismiss="alert"
             aria-label="Close"
           >
-            <span aria-hidden="true">×</span>
+            <span aria-hidden="true">&times;</span>
           </button>
           <strong>{{ messages[0] }}</strong>
         </div>
         {% endif %} {% endwith %}
-        <form action="{{url_for('login')}}" data-parsley-validate method="post">
-          <h1>Login Form</h1>
-          <!-- <form action="{{url_for('login')}}" method="post"> -->
-          <input type="text" name="nm" id="nm" />
-          <input type="password" name="password" id="ps" />
-          <!-- </form> -->
-          <div>
-            <button type="submit" class="btn btn-default submit" name="login">
-              Log in
-            </button>
+
+        <section class="features-icons text-center">
+          <div class="form-signin">
+            <div class="row">
+              <div class="col-md-12"></div>
+            </div>
+
+            <!-- Login form -->
+            <form
+              action="{{url_for('login')}}"
+              data-parsley-validate
+              method="post"
+              novalidate="novalidate"
+            >
+              <h2 class="mb-3">UPB Account</h2>
+              <p>Masuk untuk menandatangani dokumen</p>
+
+              <label class="sr-only" for="nm">Username</label>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="NIM / NIDN"
+                autofocus=""
+                required="required"
+                data-val="true"
+                data-val-required="Username harus diisi."
+                id="nm"
+                name="nm"
+                value=""
+              />
+              <span
+                class="help-block field-validation-valid"
+                data-valmsg-for="nm"
+                data-valmsg-replace="true"
+              ></span>
+
+              <label class="sr-only" for="password">Password</label>
+              <input
+                type="password"
+                class="form-control mt-2"
+                placeholder="Password"
+                required="required"
+                data-val="true"
+                data-val-required="Password harus diisi."
+                name="password"
+                id="ps"
+              />
+              <span
+                class="help-block field-validation-valid"
+                data-valmsg-for="password"
+                data-valmsg-replace="true"
+              ></span>
+              <div class="checkbox mb-3"></div>
+              <button
+                class="btn btn-lg btn-primary btn-block"
+                type="submit"
+                name="login"
+              >
+                Sign In
+              </button>
+            </form>
           </div>
-        </form>
+        </section>
       </section>
     </div>
   </div>

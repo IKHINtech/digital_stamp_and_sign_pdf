@@ -12,12 +12,24 @@
           data-toggle="dropdown"
           aria-expanded="false"
         >
-          <img src="{{ current_user.gravatar(size=100) }}" alt="" />
+          {% if current_user.p_profile is none %}
+          <img
+            src="{{ url_for('static', filename='images/user.png')}}"
+            alt=""
+          />
+          {% else %}
+          <img
+            src="{{ url_for('static', filename='uploads/')}}{{ current_user.p_profile }}"
+            alt=""
+          />
+          {% endif %}
           <span class="fa fa-angle-down"></span>
         </a>
         <ul class="dropdown-menu dropdown-usermenu pull-right">
+          <li>
+            <a href="{{url_for('profile', id = current_user.id)}}"> Profile</a>
+          </li>
           <!--
-          <li><a href="javascript:;"> Profile</a></li>
           <li>
             <a href="javascript:;">
               <span class="badge bg-red pull-right">50%</span>
