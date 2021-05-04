@@ -9,7 +9,7 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     CORS_HEADERS = 'Content-Type'
     UPLOAD_FOLDER = os.path.join(basedir, "app/static/uploads")
-    UPLOAD_FILE = os.path.join(basedir, "static/uploads/pdf")
+    UPLOAD_FILE = os.path.join(basedir, "app/static/uploads/pdf")
     CERTIFICATE = os.path.join(basedir, "app/static/uploads/certificate")
     TEMPLATE_FOLDER = os.path.join(basedir, "app/static/uploads/template")
     SIGNATURE_FILE = os.path.join(basedir, "app/static/uploads/signature")

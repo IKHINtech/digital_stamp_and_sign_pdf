@@ -178,16 +178,22 @@ def upload_file():
                 #fields
                 output_file = file_name +' ' + current_user.name+'.pdf'
                 path1 = os.path.join(app.config['UPLOAD_FILE'],output_file)
-                file.save(os.path.join(app.config['UPLOAD_FILE'],output_file))
-                #Open File
-                b = open(path1, 'rb')
-                up = fileModel( filename = file_name, file = b.read(), user_id = current_user.id,  dosen1 = dosen1, dosen2= dosen2, dosen3 = dosen3, page=page)
-                db.session.add(up)
-                db.session.commit()
-                flash('File Berhasil Diupload','success')
-                return redirect(url_for('diupload'))
+                file.save(path1)
             except Exception as e:
-                return str(e)
+                flash(str(e), 'warning')
+                return redirect(url_for('upload_file'))
+                #Open File
+            with open(path1, 'rb') as doc:
+                try:
+                    up = fileModel( filename = file_name, file = doc.read(), user_id = current_user.id,  dosen1 = dosen1, dosen2= dosen2, dosen3 = dosen3, page=page)
+                    db.session.add(up)
+                    db.session.commit()
+                    flash('File Berhasil Diupload','success')
+                    return redirect(url_for('diupload'))
+                except Exception as e:
+                    flash(str(e), 'warning')
+                    return redirect(url_for('upload_file'))
+            
     return render_template('/upload/index.html')
 
 
