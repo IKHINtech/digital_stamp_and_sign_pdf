@@ -3,9 +3,6 @@ block stylesheets %} {{ super() }} {% endblock stylesheets %} {% block content
 %}
 <div class="right_col" role="main">
   <div class="col-md-12 col-sm-12 col-xs-12">
-    <h1>Welcome</h1>
-  </div>
-  <div class="col-md-12 col-sm-12 col-xs-12">
     {% for category, message in get_flashed_messages(with_categories=true) %}
     <div class="alert alert-{{ category }} alert-dismissible " role="alert">
       <button
@@ -53,27 +50,5 @@ block stylesheets %} {{ super() }} {% endblock stylesheets %} {% block content
   </form>
 </div>
 
-{% endblock content %} {% block javascripts %} {{ super()}}
-<!-- Chart.js -->
-<script src="{{ url_for('static', filename='vendors/Chart.js/dist/Chart.min.js') }}"></script>
-<!-- gauge.js -->
-<script src="{{ url_for('static', filename='vendors/gauge.js/dist/gauge.min.js') }}"></script>
-<!-- Skycons -->
-<script src="{{ url_for('static', filename='vendors/skycons/skycons.js') }}"></script>
-<!-- Flot -->
-<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.js') }}"></script>
-<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.pie.js') }}"></script>
-<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.time.js') }}"></script>
-<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.stack.js') }}"></script>
-<script src="{{ url_for('static', filename='vendors/Flot/jquery.flot.resize.js') }}"></script>
-<!-- Flot plugins -->
-<script src="{{ url_for('static', filename='vendors/flot.orderbars/js/jquery.flot.orderBars.js') }}"></script>
-<script src="{{ url_for('static', filename='vendors/flot-spline/js/jquery.flot.spline.min.js') }}"></script>
-<script src="{{ url_for('static', filename='vendors/flot.curvedlines/curvedLines.js') }}"></script>
-<!-- DateJS -->
-<script src="{{ url_for('static', filename='vendors/DateJS/build/date.js') }}"></script>
-<!-- JQVMap -->
-<script src="{{ url_for('static', filename='vendors/jqvmap/dist/jquery.vmap.js') }}"></script>
-<script src="{{ url_for('static', filename='vendors/jqvmap/dist/maps/jquery.vmap.world.js') }}"></script>
-<script src="{{ url_for('static', filename='vendors/jqvmap/examples/js/jquery.vmap.sampledata.js') }}"></script>
-{% endblock javascripts %}
+{% endblock content %} {% block javascripts %} {{ super()}} {% endblock
+javascripts %}

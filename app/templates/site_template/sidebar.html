@@ -19,7 +19,7 @@
       />
       {% else %}
       <img
-        src="{{ url_for('static', filename='uploads/')}}{{ current_user.p_profile }}"
+        src="{{ url_for('static', filename='uploads/photos/')}}{{ current_user.p_profile }}"
         alt="..."
         class="img-circle profile_img"
       />
@@ -43,15 +43,41 @@
           <a href="/dashboard"><i class="fa fa-home"></i> Home </a>
         </li>
         {% if current_user.role.name=='Dosen' or current_user.role.name=='Prodi'
-        %}
+        or current_user.role.name =='Dekan'%}
         <li>
-          <a href="{{url_for('permintaan')}}"
+          <a
             ><i class="fa fa-bell-o"></i> Permintaan
-            <span id="notif" class="badge bg-red"></span>
+            <!-- <span id="notif" class="badge bg-red"></span> -->
           </a>
+          <ul class="nav child_menu">
+            {% if current_user.role.name=='Dosen' %}
+            <li>
+              <a href="{{url_for('p_penguji_1')}}"
+                >Dosen Penguji 1 <span class="badge bg-red">4</span></a
+              >
+            </li>
+            <li>
+              <a href="{{url_for('p_penguji_2')}}">Dosen Penguji 2</a>
+            </li>
+            <li>
+              <a href="{{url_for('p_pembimbing_1')}}">Dosen Pembimbing 1</a>
+            </li>
+            <li>
+              <a href="{{url_for('p_pembimbing_2')}}">Dosen Pembimbing 2</a>
+            </li>
+            {% endif %}{% if current_user.role.name=='Prodi' %}
+            <li>
+              <a href="{{url_for('p_prodi')}}">Prodi</a>
+            </li>
+            {% endif %} {% if current_user.role.name=='Dekan' %}
+            <li>
+              <a href="{{url_for('p_dekan')}}">Dekan</a>
+            </li>
+            {% endif %}
+          </ul>
         </li>
         <li>
-          <a href="{{url_for('sign_file')}}"
+          <a href="{{url_for('skripsi_complete')}}"
             ><i class="fa fa-pencil"></i> Di TandaTangani
           </a>
         </li>
@@ -62,8 +88,16 @@
             <span class="fa fa-chevron-down"></span
           ></a>
           <ul class="nav child_menu">
-            <li><a href="{{ url_for('upload_file') }}">Upload</a></li>
+            <li>
+              <a href="{{ url_for('upload_file') }}">Upload File KKP/KKN</a>
+            </li>
+            <li>
+              <a href="{{ url_for('upload_skripsi') }}">Upload File Skripsi</a>
+            </li>
             <li><a href="{{ url_for('diupload') }}">Diupload</a></li>
+            <li>
+              <a href="{{ url_for('skripsi_diupload') }}">Skripsi Diupload</a>
+            </li>
             <li>
               <a href="{{ url_for('sign_file_all') }}">Di TandaTangani</a>
             </li>
@@ -86,6 +120,9 @@
             <li>
               <a href="{{url_for('all_prodi')}}">Data Prodi</a>
             </li>
+            <li>
+              <a href="{{url_for('all_dekan')}}">Data Dekan</a>
+            </li>
           </ul>
         </li>
         {% endif %}
@@ -98,7 +135,8 @@
             {% if current_user.role.name=='Administrator' %}
             <li><a href="{{url_for('template')}}">Template</a></li>
             {% endif %} {% if current_user.role.name =='Dosen' or
-            current_user.role.name =='Prodi' %}
+            current_user.role.name =='Prodi' or current_user.role.name =='Dekan'
+            %}
             <li>
               <a href="{{url_for('signature', id = current_user.id)}}"
                 >Tanda Tangan</a

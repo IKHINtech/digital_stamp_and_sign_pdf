@@ -41,4 +41,61 @@ class SignTable(db.Model):
     def __repr__(self):
         return "<SignTable %r>" % self.file_id
 
+class Skripsi(db.Model):
+    __tablename__ = 'skripsi'
+    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    filename = db.Column(db.String(128), unique=True)
+    file = db.Column(db.LargeBinary())
+    path = db.Column(db.String(128))
+    date_upload= db.Column(db.DateTime(), index=True, default=datetime.utcnow)
+    page = db.Column(db.Integer)
+    pem1 = db.Column(db.String(128))
+    pem2 = db.Column(db.String(128))
+    peng1 = db.Column(db.String(128))
+    peng2 = db.Column(db.String(128))
+    prodi = db.Column(db.String(128))
+    dekan = db.Column(db.String(128))
+    pem1_sign = db.Column(db.Boolean, default=False, nullable= False)
+    pem2_sign = db.Column(db.Boolean, default=False, nullable= False)
+    peng1_sign = db.Column(db.Boolean, default=False, nullable= False)
+    peng2_sign = db.Column(db.Boolean, default=False, nullable= False)
+    prodi_sign = db.Column(db.Boolean, default=False, nullable= False)
+    dekan_sign = db.Column(db.Boolean, default=False, nullable= False)
+    pem1_date = db.Column(db.DateTime(), index=True)
+    pem2_date = db.Column(db.DateTime(), index=True)
+    peng1_date = db.Column(db.DateTime(), index=True)
+    peng2_date = db.Column(db.DateTime(), index=True)
+    prodi_date = db.Column(db.DateTime(), index=True)
+    dekan_date = db.Column(db.DateTime(), index=True)
+    done = db.Column(db.Boolean, default=False, nullable= False)
+    progres = db.Column(db.Integer, default = 0)
+    
+    def __repr__(self):
+        return  "<Skripsi %r>" % self.filename
+
+class temp(db.Model):
+    __tablename__ = 'file_temp'
+    id = db.Column(db.Integer, primary_key = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    filename = db.Column(db.String(128), unique=True)
+    file = db.Column(db.LargeBinary())
+    path = db.Column(db.String(128))
+    date_upload= db.Column(db.DateTime(), index=True, default=datetime.utcnow)
+    page = db.Column(db.Integer)
+    pem1 = db.Column(db.String(128))
+    pem2 = db.Column(db.String(128))
+    peng1 = db.Column(db.String(128))
+    peng2 = db.Column(db.String(128))
+    prodi = db.Column(db.String(128))
+    dekan = db.Column(db.String(128))
+    pem1_path = db.Column(db.Boolean, default=False, nullable= False)
+    pem2_path = db.Column(db.Boolean, default=False, nullable= False)
+    peng1_path = db.Column(db.Boolean, default=False, nullable= False)
+    peng2_path = db.Column(db.Boolean, default=False, nullable= False)
+    prodi_path = db.Column(db.Boolean, default=False, nullable= False)
+    dekan_path = db.Column(db.Boolean, default=False, nullable= False)
+    
+    def __repr__(self):
+        return  "<Skripsi %r>" % self.filename
 

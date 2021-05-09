@@ -1,0 +1,439 @@
+{% extends "base_site.html" %} {% block title %} Upload File {% endblock title
+%} {% block stylesheets %} {{ super() }} {% endblock stylesheets %} {% block
+content %}
+<div class="right_col" role="main">
+  <div class="">
+    <div class="page-title">
+      <div class="title_left">
+        <h3>Upload File Skripsi</h3>
+      </div>
+
+      <div class="title_right">
+        <div class="col-md-12">
+          <!-- message -->
+          {% for category, message in get_flashed_messages(with_categories=true)
+          %}
+          <div
+            class="alert alert-{{ category }} alert-dismissible "
+            role="alert"
+          >
+            <button
+              type="button"
+              class="close"
+              data-dismiss="alert"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">×</span>
+            </button>
+            {{ message }}
+          </div>
+          {% endfor %}
+          <!-- message -->
+        </div>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+          <div class="x_title">
+            <h2>
+              Langkah 1 Isi Detail Dokumen
+              <!-- <small>Sessions</small> -->
+            </h2>
+            <ul class="nav navbar-right panel_toolbox">
+              <li>
+                <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+              </li>
+              <li class="dropdown">
+                <a
+                  href="#"
+                  class="dropdown-toggle"
+                  data-toggle="dropdown"
+                  role="button"
+                  aria-expanded="false"
+                  ><i class="fa fa-wrench"></i
+                ></a>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href="#">Settings 1</a></li>
+                  <li><a href="#">Settings 2</a></li>
+                </ul>
+              </li>
+              <li>
+                <a class="close-link"><i class="fa fa-close"></i></a>
+              </li>
+            </ul>
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content">
+            <!-- Smart Wizard -->
+            <p>
+              Mohon untuk melakukan semua step supaya dokumen berhasil di Upload
+            </p>
+            <div id="wizard" class="form_wizard wizard_horizontal">
+              <ul class="wizard_steps">
+                <li>
+                  <a href="#step-1" class="selected">
+                    <span class="step_no">1</span>
+                    <span class="step_descr">
+                      Step 1<br />
+                      <small>Isi Detail Dokumen</small>
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#step-2" class="disabled">
+                    <span class="step_no">2</span>
+                    <span class="step_descr">
+                      Step 2<br />
+                      <small>Tanda Tangan Penguji 1</small>
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#step-3" class="disabled">
+                    <span class="step_no">3</span>
+                    <span class="step_descr">
+                      Step 3<br />
+                      <small>Tanda Tangan Penguji 2</small>
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#step-4" class="disabled">
+                    <span class="step_no">4</span>
+                    <span class="step_descr">
+                      Step 4<br />
+                      <small>Tanda Tangan Pembimbing 1</small>
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#step-5" class="disabled">
+                    <span class="step_no">5</span>
+                    <span class="step_descr">
+                      Step 5<br />
+                      <small>Tanda Tangan Pembimbing 2</small>
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#step-6" class="disabled">
+                    <span class="step_no">6</span>
+                    <span class="step_descr">
+                      Step 6<br />
+                      <small>Tanda Tangan Prodi</small>
+                    </span>
+                  </a>
+                </li>
+                <li>
+                  <a href="#step-7" class="disabled">
+                    <span class="step_no">7</span>
+                    <span class="step_descr">
+                      Step 7<br />
+                      <small>Tanda Tangan Dekan</small>
+                    </span>
+                  </a>
+                </li>
+              </ul>
+              <div class="ln_solid"></div>
+              <div id="step-1">
+                <form
+                  action="{{url_for('upload_skripsi')}}"
+                  method="POST"
+                  enctype="multipart/form-data"
+                  class="form-horizontal form-label-left"
+                  autocomplete="on"
+                >
+                  <div class="form-group">
+                    <label
+                      class="control-label col-md-3 col-sm-3 col-xs-12"
+                      for="file-name"
+                      >Nama Dokumen <span class="required">*</span>
+                    </label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                      <input
+                        type="text"
+                        name="filename"
+                        required="required"
+                        class="form-control col-md-7 col-xs-12"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label
+                      class="control-label col-md-3 col-sm-3 col-xs-12"
+                      for="last-name"
+                      >File Skripsi <span class="required">*</span>
+                    </label>
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                      <input
+                        type="file"
+                        id="file-skripsi"
+                        name="fileskripsi"
+                        required="required"
+                        class="form-control col-md-7 col-xs-12"
+                        accept=".pdf"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label
+                      for="page-number"
+                      class="control-label col-md-3 col-sm-3 col-xs-12"
+                      >Halaman untuk ditanda tangan</label
+                    >
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                      <input
+                        id="page-number"
+                        class="form-control col-md-7 col-xs-12"
+                        type="number"
+                        name="page"
+                        required="required"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12"
+                      >Dosen Penguji 1</label
+                    >
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                      <input
+                        id="penguji-1"
+                        class="form-control col-md-7 col-xs-12"
+                        type="text"
+                        name="penguji1"
+                        required="required"
+                      />
+                      <div
+                        class="col-sm-12 text-danger"
+                        id="warning1"
+                        style="display: none"
+                      >
+                        Pilih Nama Penguji Yang Tersedia
+                      </div>
+                      <!-- <ul class="list-group" id="resultlist1"></ul> -->
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12"
+                      >Dosen Penguji 2</label
+                    >
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                      <input
+                        id="penguji-2"
+                        class="form-control col-md-7 col-xs-12"
+                        type="text"
+                        name="penguji2"
+                        required="required"
+                      />
+                      <div
+                        class="col-sm-12 text-danger"
+                        id="warning2"
+                        style="display: none"
+                      >
+                        Pilih Nama Penguji Yang Tersedia
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12"
+                      >Dosen Pembimbing 1</label
+                    >
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                      <input
+                        id="pembimbing-1"
+                        class="form-control col-md-7 col-xs-12"
+                        type="text"
+                        name="pembimbing1"
+                        required="required"
+                      />
+                      <div
+                        class="col-sm-12 text-danger"
+                        id="warning3"
+                        style="display: none"
+                      >
+                        Pilih Nama Pembimbing Yang Tersedia
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12"
+                      >Dosen Pembimbing 2</label
+                    >
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                      <input
+                        id="pembimbing-2"
+                        class="form-control col-md-7 col-xs-12"
+                        type="text"
+                        name="pembimbing2"
+                        required="required"
+                      />
+                      <div
+                        class="col-sm-12 text-danger"
+                        id="warning4"
+                        style="display: none"
+                      >
+                        Pilih Nama Pembimbing Yang Tersedia
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12"
+                      >Prodi</label
+                    >
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                      <input
+                        id="prodi"
+                        class="form-control col-md-7 col-xs-12"
+                        type="text"
+                        name="prodi"
+                        required="required"
+                      />
+                      <div
+                        class="col-sm-12 text-danger"
+                        id="warning5"
+                        style="display: none"
+                      >
+                        Pilih Nama Prodi Yang Tersedia
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label class="control-label col-md-3 col-sm-3 col-xs-12"
+                      >Dekan</label
+                    >
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                      <input
+                        id="dekan"
+                        class="form-control col-md-7 col-xs-12"
+                        type="text"
+                        name="dekan"
+                        required="required"
+                      />
+                      <div
+                        class="col-sm-12 text-danger"
+                        id="warning6"
+                        style="display: none"
+                      >
+                        Pilih Nama Dekan Yang Tersedia
+                      </div>
+                    </div>
+                  </div>
+                  <div class="ln_solid"></div>
+                  <div class="form-group">
+                    <div class="col-md-6 col-md-offset-3">
+                      <button class="btn btn-primary">Cancel</button>
+                      <button id="send" type="submit" class="btn btn-success">
+                        Submit
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+            <!-- End SmartWizard Content -->
+
+            <!-- End SmartWizard Content -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var dosen = [];
+  var prodi = [];
+  var dekan = []
+
+  {% for a in data %}
+    dosen.push('{{a.name}}')
+  {% endfor %}
+  {% for b in data1 %}
+    prodi.push('{{b.name}}')
+  {% endfor %}
+   {% for c in dekan %}
+    dekan.push('{{c.name}}')
+  {% endfor %}
+  console.log(dosen);
+  console.log(prodi);
+
+  $("#penguji-1").autocomplete({
+    source: dosen,
+    autoFocus: true,
+    change: function(event, ui){
+      if(!ui.item){
+        $(this).val('')
+        $('#warning1').show()
+      }else{
+        $('#warning1').hide()
+      }
+    }
+  });
+  $("#penguji-2").autocomplete({
+    source: dosen,
+    autoFocus: true,
+    change: function(event, ui){
+      if(!ui.item){
+        $(this).val('')
+        $('#warning2').show()
+      }else{
+        $('#warning2').hide()
+      }
+    }
+  });
+  $("#pembimbing-1").autocomplete({
+    source: dosen,
+    autoFocus: true,
+    change: function(event, ui){
+      if(!ui.item){
+        $(this).val('')
+        $('#warning3').show()
+      }else{
+        $('#warning3').hide()
+      }
+    }
+  });
+  $("#pembimbing-2").autocomplete({
+    source: dosen,
+    autoFocus: true,
+    change: function(event, ui){
+      if(!ui.item){
+        $(this).val('')
+        $('#warning4').show()
+      }else{
+        $('#warning4').hide()
+      }
+    }
+  });
+  $("#prodi").autocomplete({
+    source: prodi,
+    autoFocus: true,
+    change: function(event, ui){
+      if(!ui.item){
+        $(this).val('')
+        $('#warning5').show()
+      }else{
+        $('#warning5').hide()
+      }
+    }
+  });
+  $("#dekan").autocomplete({
+    source: dekan,
+    autoFocus: true,
+    change: function(event, ui){
+      if(!ui.item){
+        $(this).val('')
+        $('#warning6').show()
+      }else{
+        $('#warning6').hide()
+      }
+    }
+  });
+</script>
+
+{% endblock content %} {% block javascripts %} {{ super() }}
+<!-- JQuery Wixard -->
+<!-- <script src="{{ url_for('static', filename='vendors/jQuery-Smart-Wizard/js/jquery.smartWizard.js') }}"></script> -->
+{% endblock javascripts %}

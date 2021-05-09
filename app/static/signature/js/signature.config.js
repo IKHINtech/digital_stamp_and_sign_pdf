@@ -13,7 +13,7 @@ interact('.digital-signature')
           y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
       target.style.webkitTransform = target.style.transform = 'translate(' + x + 'px, ' + y + 'px)';
-      target.style.border = '2px dashed #ddd';
+      target.style.border = '3px dashed #FF0000';
       target.classList.remove('digital-signature--remove')
 
       target.setAttribute('data-x', x);

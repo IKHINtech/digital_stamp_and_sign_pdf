@@ -1,8 +1,8 @@
 """1
 
-Revision ID: 17c8d5f2b50a
+Revision ID: 0762e6d93491
 Revises: 
-Create Date: 2021-05-02 13:00:42.503434
+Create Date: 2021-05-08 08:54:07.197637
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '17c8d5f2b50a'
+revision = '0762e6d93491'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -41,7 +41,6 @@ def upgrade():
     sa.Column('password_sertifikat', sa.String(length=128), nullable=True),
     sa.Column('password_hash', sa.String(length=128), nullable=True),
     sa.Column('role_id', sa.Integer(), nullable=True),
-    sa.Column('avatar_hash', sa.String(length=32), nullable=True),
     sa.ForeignKeyConstraint(['role_id'], ['roles.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -54,11 +53,39 @@ def upgrade():
         batch_op.create_index(batch_op.f('ix_users_sertifikat'), ['sertifikat'], unique=False)
         batch_op.create_index(batch_op.f('ix_users_signature'), ['signature'], unique=False)
 
+    op.create_table('file_temp',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('filename', sa.String(length=128), nullable=True),
+    sa.Column('file', sa.LargeBinary(), nullable=True),
+    sa.Column('path', sa.String(length=128), nullable=True),
+    sa.Column('date_upload', sa.DateTime(), nullable=True),
+    sa.Column('page', sa.Integer(), nullable=True),
+    sa.Column('pem1', sa.String(length=128), nullable=True),
+    sa.Column('pem2', sa.String(length=128), nullable=True),
+    sa.Column('peng1', sa.String(length=128), nullable=True),
+    sa.Column('peng2', sa.String(length=128), nullable=True),
+    sa.Column('prodi', sa.String(length=128), nullable=True),
+    sa.Column('dekan', sa.String(length=128), nullable=True),
+    sa.Column('pem1_path', sa.Boolean(), nullable=False),
+    sa.Column('pem2_path', sa.Boolean(), nullable=False),
+    sa.Column('peng1_path', sa.Boolean(), nullable=False),
+    sa.Column('peng2_path', sa.Boolean(), nullable=False),
+    sa.Column('prodi_path', sa.Boolean(), nullable=False),
+    sa.Column('dekan_path', sa.Boolean(), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('filename')
+    )
+    with op.batch_alter_table('file_temp', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_file_temp_date_upload'), ['date_upload'], unique=False)
+
     op.create_table('files',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('filename', sa.String(length=128), nullable=True),
     sa.Column('date_upload', sa.DateTime(), nullable=True),
+    sa.Column('page', sa.Integer(), nullable=True),
     sa.Column('file', sa.LargeBinary(), nullable=True),
     sa.Column('dosen1', sa.String(length=128), nullable=True),
     sa.Column('dosen1_sign', sa.Boolean(), nullable=False),
@@ -72,6 +99,46 @@ def upgrade():
     )
     with op.batch_alter_table('files', schema=None) as batch_op:
         batch_op.create_index(batch_op.f('ix_files_date_upload'), ['date_upload'], unique=False)
+
+    op.create_table('skripsi',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('filename', sa.String(length=128), nullable=True),
+    sa.Column('file', sa.LargeBinary(), nullable=True),
+    sa.Column('path', sa.String(length=128), nullable=True),
+    sa.Column('date_upload', sa.DateTime(), nullable=True),
+    sa.Column('page', sa.Integer(), nullable=True),
+    sa.Column('pem1', sa.String(length=128), nullable=True),
+    sa.Column('pem2', sa.String(length=128), nullable=True),
+    sa.Column('peng1', sa.String(length=128), nullable=True),
+    sa.Column('peng2', sa.String(length=128), nullable=True),
+    sa.Column('prodi', sa.String(length=128), nullable=True),
+    sa.Column('dekan', sa.String(length=128), nullable=True),
+    sa.Column('pem1_sign', sa.Boolean(), nullable=False),
+    sa.Column('pem2_sign', sa.Boolean(), nullable=False),
+    sa.Column('peng1_sign', sa.Boolean(), nullable=False),
+    sa.Column('peng2_sign', sa.Boolean(), nullable=False),
+    sa.Column('prodi_sign', sa.Boolean(), nullable=False),
+    sa.Column('dekan_sign', sa.Boolean(), nullable=False),
+    sa.Column('pem1_date', sa.DateTime(), nullable=True),
+    sa.Column('pem2_date', sa.DateTime(), nullable=True),
+    sa.Column('peng1_date', sa.DateTime(), nullable=True),
+    sa.Column('peng2_date', sa.DateTime(), nullable=True),
+    sa.Column('prodi_date', sa.DateTime(), nullable=True),
+    sa.Column('dekan_date', sa.DateTime(), nullable=True),
+    sa.Column('done', sa.Boolean(), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('filename')
+    )
+    with op.batch_alter_table('skripsi', schema=None) as batch_op:
+        batch_op.create_index(batch_op.f('ix_skripsi_date_upload'), ['date_upload'], unique=False)
+        batch_op.create_index(batch_op.f('ix_skripsi_dekan_date'), ['dekan_date'], unique=False)
+        batch_op.create_index(batch_op.f('ix_skripsi_pem1_date'), ['pem1_date'], unique=False)
+        batch_op.create_index(batch_op.f('ix_skripsi_pem2_date'), ['pem2_date'], unique=False)
+        batch_op.create_index(batch_op.f('ix_skripsi_peng1_date'), ['peng1_date'], unique=False)
+        batch_op.create_index(batch_op.f('ix_skripsi_peng2_date'), ['peng2_date'], unique=False)
+        batch_op.create_index(batch_op.f('ix_skripsi_prodi_date'), ['prodi_date'], unique=False)
 
     op.create_table('file_signs',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -105,10 +172,24 @@ def downgrade():
         batch_op.drop_index(batch_op.f('ix_file_signs_date'))
 
     op.drop_table('file_signs')
+    with op.batch_alter_table('skripsi', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_skripsi_prodi_date'))
+        batch_op.drop_index(batch_op.f('ix_skripsi_peng2_date'))
+        batch_op.drop_index(batch_op.f('ix_skripsi_peng1_date'))
+        batch_op.drop_index(batch_op.f('ix_skripsi_pem2_date'))
+        batch_op.drop_index(batch_op.f('ix_skripsi_pem1_date'))
+        batch_op.drop_index(batch_op.f('ix_skripsi_dekan_date'))
+        batch_op.drop_index(batch_op.f('ix_skripsi_date_upload'))
+
+    op.drop_table('skripsi')
     with op.batch_alter_table('files', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_files_date_upload'))
 
     op.drop_table('files')
+    with op.batch_alter_table('file_temp', schema=None) as batch_op:
+        batch_op.drop_index(batch_op.f('ix_file_temp_date_upload'))
+
+    op.drop_table('file_temp')
     with op.batch_alter_table('users', schema=None) as batch_op:
         batch_op.drop_index(batch_op.f('ix_users_signature'))
         batch_op.drop_index(batch_op.f('ix_users_sertifikat'))

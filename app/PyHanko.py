@@ -41,31 +41,45 @@ def buat_qr(bg, input_data, output_data, urls, user, page, x, y):
                         ), page, x, y, url=urls)
     return out
 
-def create_sign(input_file, output_file, crt_file, key_file, ca_key, field, reason, name):
+def create_sign(input_file,  bg, crt_file, key_file, password, url , field, reason, name):
     cms_signer = signers.SimpleSigner.load(
         key_file, crt_file,
-        ca_chain_files=(ca_key,),
-        key_passphrase=b'rahasia'
-    )
-    a = open(output_file, mode="wb")
-    with open(input_file, 'rb') as doc:
-        w = IncrementalPdfFileWriter(doc)
-        out = signers.sign_pdf(
-            w, signers.PdfSignatureMetadata(
-                field_name=field,
-                reason=reason,
-                name=name,
-                location= 'Pelita Bangsa University',
-                subfilter = SigSeedSubFilter.PADES,
-                use_pades_lta= True,
-                timestamp_field_name = 'Field_time' ,
-                docmdp_permissions= MDPPerm.NO_CHANGES,
-                # embed_validation_info= True,
-                # validation_context = ValidationContext(other_certs=[root_cert]), 
-                md_algorithm = 'sha256'
-            ),
-            signer=cms_signer, output=a
-        )
+        key_passphrase=bytes(password, encoding='utf-8')
+        )   
+    path = os.path.join(app.config['SIGNATURE_FILE'],bg)
+    img = Image.open(path)
+    tb = TextBoxStyle(font=SimpleFontEngine(name='Courier', avg_width=0.6),
+                    font_size=8, leading=None,
+                    text_sep=10, border_width=0,
+                    vertical_center=False,)
+
+    try:    # a = open(output_file, mode="wb")
+        with open(input_file, 'rb+') as doc:
+            w = IncrementalPdfFileWriter(doc)
+            style = QRStampStyle(
+                background=PdfImage(img, writer=None),
+                background_opacity=1,
+                border_width=1,
+                text_box_style=tb, 
+                stamp_text="Digital Signed By \n{} \n%(ts)s".format(name),
+                timestamp_format='%d-%m-%Y %H:%M:%S %Z',
+                stamp_qrsize=1.0)
+            out = signers.PdfSigner(
+                signers.PdfSignatureMetadata(
+                    field_name=field,
+                    reason=reason,
+                    name=name,
+                    location= 'Universitas Pelita Bangsa',
+                    subfilter = SigSeedSubFilter.PADES,
+                    use_pades_lta= True,
+                    timestamp_field_name = 'Field_time',
+                    md_algorithm = 'sha256'
+                ),
+                signer=cms_signer,
+                stamp_style= style
+            ).sign_pdf(pdf_out= w, appearance_text_params= {'url': url}, in_place=True)
+    except Exception as e:
+        return str(e)
     return out
 
 def create_sign_new(input_file, output_file, bg, crt_file, key_file, field:str, url:str ,reason:str, name:str, password:str,page:int, x:int, y:int):
@@ -113,6 +127,127 @@ def create_sign_new(input_file, output_file, bg, crt_file, key_file, field:str, 
         ).sign_pdf(pdf_out= w, output=a, appearance_text_params= {'url': url})
     return out
 
+def create_field1(input_file,output_file, x, y, page):
+    x1 = x+150
+    y1 = y+50
+    a = open(output_file, mode="wb")
+    with open(input_file, 'rb') as doc:
+        w = IncrementalPdfFileWriter(doc)
+        #x = 300
+        #y = 174
+        append_signature_field(
+                w, SigFieldSpec(
+                    sig_field_name='Signature1', on_page=page, 
+                    box=(x,y,x1,y1),
+                    field_mdp_spec=fields.FieldMDPSpec(fields.FieldMDPAction.INCLUDE, 
+                    fields=['fields']), doc_mdp_update_value=fields.MDPPerm.FILL_FORMS))
+        w.write(a)
+        print(w)
+        return w
+
+def create_field2(input_file,output_file, x, y, page):
+    x1 = x+150
+    y1 = y+50
+    a = open(output_file, mode="wb")
+    with open(input_file, 'rb') as doc:
+        w = IncrementalPdfFileWriter(doc)
+        #x = 300
+        #y = 174
+        append_signature_field(
+                w, SigFieldSpec(
+                    sig_field_name='Signature2', on_page=page, 
+                    box=(x,y,x1,y1),
+                    field_mdp_spec=fields.FieldMDPSpec(fields.FieldMDPAction.INCLUDE, 
+                    fields=['fields']), doc_mdp_update_value=fields.MDPPerm.FILL_FORMS))
+        w.write(a)
+        print(w)
+        return w
+
+def create_field3(input_file,output_file, x, y, page):
+    x1 = x+150
+    y1 = y+50
+    a = open(output_file, mode="wb")
+    with open(input_file, 'rb') as doc:
+        w = IncrementalPdfFileWriter(doc)
+        #x = 300
+        #y = 174
+        append_signature_field(
+                w, SigFieldSpec(
+                    sig_field_name='Signature3', on_page=page, 
+                    box=(x,y,x1,y1),
+                    field_mdp_spec=fields.FieldMDPSpec(fields.FieldMDPAction.INCLUDE, 
+                    fields=['fields']), doc_mdp_update_value=fields.MDPPerm.FILL_FORMS))
+        w.write(a)
+        print(w)
+        return w
+
+def create_field4(input_file,output_file, x, y, page):
+    x1 = x+150
+    y1 = y+50
+    a = open(output_file, mode="wb")
+    with open(input_file, 'rb') as doc:
+        w = IncrementalPdfFileWriter(doc)
+        #x = 300
+        #y = 174
+        append_signature_field(
+                w, SigFieldSpec(
+                    sig_field_name='Signature4', on_page=page, 
+                    box=(x,y,x1,y1),
+                    field_mdp_spec=fields.FieldMDPSpec(fields.FieldMDPAction.INCLUDE, 
+                    fields=['fields']), doc_mdp_update_value=fields.MDPPerm.FILL_FORMS))
+        w.write(a)
+        print(w)
+        return w
+
+def create_field5(input_file,output_file, x, y, page):
+    x1 = x+150
+    y1 = y+50
+    a = open(output_file, mode="wb")
+    with open(input_file, 'rb') as doc:
+        w = IncrementalPdfFileWriter(doc)
+        #x = 300
+        #y = 174
+        append_signature_field(
+                w, SigFieldSpec(
+                    sig_field_name='Signature5', on_page=page, 
+                    box=(x,y,x1,y1),
+                    field_mdp_spec=fields.FieldMDPSpec(fields.FieldMDPAction.INCLUDE, 
+                    fields=['fields']), doc_mdp_update_value=fields.MDPPerm.FILL_FORMS))
+        w.write(a)
+        print(w)
+        return w
+
+def create_field6(input_file,output_file, x, y, page):
+    x1 = x+150
+    y1 = y+50
+    a = open(output_file, mode="wb")
+    with open(input_file, 'rb') as doc:
+        w = IncrementalPdfFileWriter(doc)
+        #x = 300
+        #y = 174
+        append_signature_field(
+                w, SigFieldSpec(
+                    sig_field_name='Signature6', on_page=page, 
+                    box=(x,y,x1,y1),
+                    field_mdp_spec=fields.FieldMDPSpec(fields.FieldMDPAction.INCLUDE, 
+                    fields=['fields']), doc_mdp_update_value=fields.MDPPerm.FILL_FORMS))
+        w.write(a)
+        print(w)
+        return w
+
+def create_field7(file_input, x, y):
+    x1 = x+150
+    y1 = y+50
+    with open(input_file, 'rb') as doc:
+        w = IncrementalPdfFileWriter(doc)
+        #x = 300
+        #y = 174
+        append_signature_field(
+                w, SigFieldSpec(
+                    sig_field_name='Signature7', on_page=page, 
+                    box=(x,y,x1,y1),
+                    field_mdp_spec=fields.FieldMDPSpec(fields.FieldMDPAction.INCLUDE, 
+                    fields=['fields']), doc_mdp_update_value=fields.MDPPerm.FILL_FORMS))                    
 
 from pyhanko.sign.general import SignatureStatus
 from pyhanko.sign.validation import SignatureCoverageLevel
@@ -133,11 +268,11 @@ def pretty(self):
         else:
             trust_status = "untrusted"
         about_signer = (
-            f"Certificate subject: \"{cert.subject.human_friendly}\"\n"
-            f"Certificate SHA1 fingerprint: {cert.sha1.hex()}\n"
-            f"Certificate SHA256 fingerprint: {cert.sha256.hex()}\n"
-            f"Trust anchor: \"{_trust_anchor(self)}\"\n"
-            f"The signer's certificate is {trust_status}."
+            cert.subject.human_friendly
+            # f"Certificate SHA1 fingerprint: {cert.sha1.hex()}\n"
+            # f"Certificate SHA256 fingerprint: {cert.sha256.hex()}\n"
+            # f"Trust anchor: \"{_trust_anchor(self)}\"\n"
+            # f"The signer's certificate is {trust_status}."
         )
 
         if self.coverage == SignatureCoverageLevel.ENTIRE_FILE:
@@ -191,7 +326,7 @@ def pretty(self):
             signing_time_str = "unknown"
 
         timing_info = (
-            f"Signing time: {signing_time_str}\n{about_tsa}"
+            signing_time_str
         )
 
         def fmt_section(hdr, body):
@@ -200,7 +335,7 @@ def pretty(self):
             )
 
         bottom_line = (
-            f"The signature is judged {'' if self.bottom_line else 'IN'}VALID."
+            f"Tanda Tangan {'' if self.bottom_line else 'IN'}VALID."
         )
 
         if self.seed_value_ok:
@@ -213,9 +348,11 @@ def pretty(self):
             )
 
         sections = [
-            ("Signer info", about_signer), ("Integrity", validity_info),
-            ("Signing time", timing_info),
-            ("Seed value constraints", sv_info),
-            ("Bottom line", bottom_line)
+            about_signer, 
+            # cert.subject.human_friendly
+            cert.sha256.hex(),
+            _trust_anchor(self),
+            ts,
+            bottom_line
         ]
         return sections

@@ -45,6 +45,7 @@
   </head>
 
   <body>
+    <!-- <img src="{{ url_for('static', filename='images/sign.jpeg') }}" alt="" /> -->
     <!-- <div class="overlay"></div> -->
     <video
       playsinline="playsinline"
@@ -55,8 +56,17 @@
       <source
         src="{{ url_for('static', filename='images/signvideo-3.mkv') }}"
         type="video/mp4"
+        width="100%"
+        height="100%"
       />
     </video>
+    <style>
+      video {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+      }
+    </style>
 
     <div class="masthead">
       <div class="masthead-bg"></div>
@@ -82,9 +92,11 @@
                 target launch date is <strong>January 2022</strong>! Sign up for
                 updates using the form below!
               </p> -->
+              <form action="{{url_for('validity_form')}}" method="POST" enctype="multipart/form-data">
               <div class="input-group input-group-newsletter">
                 <input
                   type="file"
+                  name="file"
                   class="form-control"
                   placeholder="Upload File"
                   aria-label="Upload File"
@@ -93,12 +105,13 @@
                 <div class="input-group-append">
                   <button
                     class="btn btn-secondary"
-                    type="button"
+                    type="submit"
                     id="submit-button"
                   >
                     Verifikasi!
                   </button>
                 </div>
+              </form>
               </div>
             </div>
           </div>

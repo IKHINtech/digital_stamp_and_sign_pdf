@@ -68,7 +68,7 @@
                       <img class="img-responsive avatar-view " src="{{ url_for('static', filename='images/user.png')}}" alt="Avatar" title="User Avatar">
                       {% else %}
                       <!-- Current avatar -->
-                      <img class="img-responsive avatar-view " src="{{ url_for('static', filename='uploads/')}}{{ current_user.p_profile }}" alt="Avatar" title="User Avatar">
+                      <img class="img-responsive avatar-view " src="{{ url_for('static', filename='uploads/photos/')}}{{ current_user.p_profile }}" alt="Avatar" title="User Avatar">
                     {% endif %}
                     </div>
                   </div>

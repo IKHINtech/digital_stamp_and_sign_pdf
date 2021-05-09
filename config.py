@@ -8,8 +8,9 @@ class Config(object):
     'sqlite:///' + os.path.join(basedir, 'data.sqlite')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     CORS_HEADERS = 'Content-Type'
-    UPLOAD_FOLDER = os.path.join(basedir, "app/static/uploads")
+    UPLOAD_FOLDER = os.path.join(basedir, "app/static/uploads/photos")
     UPLOAD_FILE = os.path.join(basedir, "app/static/uploads/pdf")
+    TEMP_FILE = os.path.join(basedir, "app/static/uploads/pdf/temp")
     CERTIFICATE = os.path.join(basedir, "app/static/uploads/certificate")
     TEMPLATE_FOLDER = os.path.join(basedir, "app/static/uploads/template")
     SIGNATURE_FILE = os.path.join(basedir, "app/static/uploads/signature")

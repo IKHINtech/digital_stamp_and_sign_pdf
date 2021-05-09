@@ -1,0 +1,131 @@
+{% extends "base_site.html" %} {% block title %} Detail Dokumen {% endblock
+title %} {% block stylesheets %} {{ super() }} {% endblock stylesheets %} {%
+block content %}
+<div class="right_col" role="main">
+  <div class="">
+    <div class="page-title">
+      <!-- <div class="title_left">
+        <h3>Plain Page</h3>
+      </div> -->
+
+      <!-- <div class="title_right"> -->
+      <div class="col-md-12">
+        <!-- message -->
+        {% for category, message in get_flashed_messages(with_categories=true)
+        %}
+        <div class="alert alert-{{ category }} alert-dismissible " role="alert">
+          <button
+            type="button"
+            class="close"
+            data-dismiss="alert"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">×</span>
+          </button>
+          <h4><i class="fa fa-exclamation"></i> {{ message }}</h4>
+        </div>
+        {% endfor %}
+        <!-- message -->
+      </div>
+      <!-- </div> -->
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="row">
+      <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+          <div class="x_title">
+            <h2>{{data.filename}} {{data.skrip.nomor}}</h2>
+            <ul class="nav navbar-right panel_toolbox">
+              <li>
+                <a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+              </li>
+              <li class="dropdown">
+                <a
+                  href="#"
+                  class="dropdown-toggle"
+                  data-toggle="dropdown"
+                  role="button"
+                  aria-expanded="false"
+                  ><i class="fa fa-wrench"></i
+                ></a>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a href="#">Settings 1</a></li>
+                  <li><a href="#">Settings 2</a></li>
+                </ul>
+              </li>
+              <li>
+                <a class="close-link"><i class="fa fa-close"></i></a>
+              </li>
+            </ul>
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content">
+            <div class="embed-responsive" style="padding-bottom: 150%">
+              <object
+                data="{{url_for('view_doc_skripsi', name= data.filename)}}"
+                type="application/pdf"
+                width="100%"
+                height="100%"
+              ></object>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="exampleModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h3 class="modal-title" id="exampleModalLabel">
+          Masukkan Password Sertifikat
+        </h3>
+      </div>
+      <div class="modal-body">
+        <form
+          action="{{url_for('sign_penguji_1', id = data.id)}}"
+          method="POST"
+        >
+          <div class="form-group">
+            <input
+              type="password"
+              class="form-control"
+              id="inputPassword1"
+              placeholder="Password"
+              name="password"
+              autofocus
+            />
+          </div>
+          <button type="submit" class="btn btn-success">Confirm</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $("body").on("shown.bs.modal", "#exampleModal", function () {
+    $(this).find($.attr("autofocus")).focus();
+  });
+</script>
+
+{% endblock content %} {% block javascripts %} {{ super()}} {% endblock
+javascripts %}
