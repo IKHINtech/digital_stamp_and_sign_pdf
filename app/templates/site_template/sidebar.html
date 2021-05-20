@@ -53,25 +53,35 @@
             {% if current_user.role.name=='Dosen' %}
             <li>
               <a href="{{url_for('p_penguji_1')}}"
-                >Dosen Penguji 1 <span class="badge bg-red">4</span></a
-              >
+                >Dosen Penguji 1 <span id="peng1" class="badge bg-red"></span
+              ></a>
             </li>
             <li>
-              <a href="{{url_for('p_penguji_2')}}">Dosen Penguji 2</a>
+              <a href="{{url_for('p_penguji_2')}}"
+                >Dosen Penguji 2 <span id="peng2" class="badge bg-red"></span
+              ></a>
             </li>
             <li>
-              <a href="{{url_for('p_pembimbing_1')}}">Dosen Pembimbing 1</a>
+              <a href="{{url_for('p_pembimbing_1')}}"
+                >Dosen Pembimbing 1 <span id="pem1" class="badge bg-red"></span
+              ></a>
             </li>
             <li>
-              <a href="{{url_for('p_pembimbing_2')}}">Dosen Pembimbing 2</a>
+              <a href="{{url_for('p_pembimbing_2')}}"
+                >Dosen Pembimbing 2 <span id="pem2" class="badge bg-red"></span
+              ></a>
             </li>
             {% endif %}{% if current_user.role.name=='Prodi' %}
             <li>
-              <a href="{{url_for('p_prodi')}}">Prodi</a>
+              <a href="{{url_for('p_prodi')}}"
+                >Prodi <span id="prodi" class="badge bg-red"></span>
+              </a>
             </li>
             {% endif %} {% if current_user.role.name=='Dekan' %}
             <li>
-              <a href="{{url_for('p_dekan')}}">Dekan</a>
+              <a href="{{url_for('p_dekan')}}"
+                >Dekan <span id="dekan" class="badge bg-red"></span
+              ></a>
             </li>
             {% endif %}
           </ul>
@@ -88,22 +98,22 @@
             <span class="fa fa-chevron-down"></span
           ></a>
           <ul class="nav child_menu">
-            <li>
+            <!-- <li>
               <a href="{{ url_for('upload_file') }}">Upload File KKP/KKN</a>
-            </li>
+            </li> -->
             <li>
               <a href="{{ url_for('upload_skripsi') }}">Upload File Skripsi</a>
             </li>
-            <li><a href="{{ url_for('diupload') }}">Diupload</a></li>
+            <!-- <li><a href="{{ url_for('diupload') }}">Diupload</a></li> -->
             <li>
               <a href="{{ url_for('skripsi_diupload') }}">Skripsi Diupload</a>
             </li>
-            <li>
+            <!-- <li>
               <a href="{{ url_for('sign_file_all') }}">Di TandaTangani</a>
-            </li>
-            <li>
+            </li> -->
+            <!-- <li>
               <a href="{{ url_for('download_template') }}">Download Template</a>
-            </li>
+            </li> -->
           </ul>
         </li>
         {% endif %} {% if current_user.role.name=='Administrator' %}
@@ -132,6 +142,9 @@
             <span class="fa fa-chevron-down"></span>
           </a>
           <ul class="nav child_menu">
+            <li>
+              <a href="{{url_for('profile', id = current_user.id)}}">Profile</a>
+            </li>
             {% if current_user.role.name=='Administrator' %}
             <li><a href="{{url_for('template')}}">Template</a></li>
             {% endif %} {% if current_user.role.name =='Dosen' or
@@ -153,22 +166,34 @@
         </li>
       </ul>
       <script>
-        fetch('{{ url_for("notif") }}').then(function (res) {
+        fetch('{{ url_for("new_notif") }}').then(function (res) {
           if (res.status !== 200) {
-            console.log("hahaha" + res.status);
+            console.log("error" + res.status);
             return;
           }
           res.json().then(function (data) {
-            console.log(data.total);
-            console.log(data.prodi);
-            if (data.total !== 0) {
+            // console.log(data.total);
+            // console.log(data.prodi);
+            if (data.peng1 !== 0) {
               {% if current_user.role.name=='Dosen' %}
-              document.getElementById("notif").innerHTML = data.total;
+              document.getElementById("peng1").innerHTML = data.peng1;
+            }else if (data.peng2 !== 0) {
+              document.getElementById("peng2").innerHTML = data.peng2;
+            }else if (data.pem1 !== 0) {
+              document.getElementById("pem1").innerHTML = data.pem1;
+            }else if (data.pem2 !== 0) {
+              document.getElementById("pem2").innerHTML = data.pem2;
               {% endif %}
-            }else{
+            }else if(data.prodi !== 0){
               {% if current_user.role.name=='Prodi' %}
               if(data.prodi !== 0){
-              document.getElementById("notif").innerHTML = data.prodi;
+              document.getElementById("prodi").innerHTML = data.prodi;
+              }
+              {% endif %}
+            }else{
+              {% if current_user.role.name=='Dekan' %}
+              if(data.dekan !== 0){
+              document.getElementById("dekan").innerHTML = data.dekan;
               }
               {% endif %}
             }

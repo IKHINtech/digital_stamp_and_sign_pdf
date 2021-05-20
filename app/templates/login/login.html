@@ -1,5 +1,5 @@
-{% extends "base_site.html" %} {% block title %} Login {% endblock title %} {%
-block stylesheets %} {{ super() }}
+{% extends "base_site.html" %} {% block title %} Login or Register {% endblock
+title %} {% block stylesheets %} {{ super() }}
 <!-- Animate.css -->
 <link
   href="{{ url_for('static', filename='vendors/animate.css/animate.min.css') }}"
@@ -25,6 +25,8 @@ block stylesheets %} {{ super() }}
 <!-- Login -->
 <script src="{{ url_for('static', filename='build/js/login.js') }}"></script>
 <div>
+  <a class="hiddenanchor" id="signup"></a>
+  <a class="hiddenanchor" id="signin"></a>
   <div class="login_wrapper">
     <div class="animate form login_form">
       <section class="login_content">
@@ -56,9 +58,12 @@ block stylesheets %} {{ super() }}
               novalidate="novalidate"
             >
               <h2 class="mb-3">UPB Account</h2>
-              <p>Masuk untuk menandatangani dokumen</p>
+              <p>
+                Masuk untuk menandatangani / melakukan permintaan
+                penandatanganan dokumen
+              </p>
 
-              <label class="sr-only" for="nm">Username</label>
+              <!-- <label class="sr-only" for="nm">Username</label> -->
               <input
                 type="text"
                 class="form-control"
@@ -77,7 +82,6 @@ block stylesheets %} {{ super() }}
                 data-valmsg-replace="true"
               ></span>
 
-              <label class="sr-only" for="password">Password</label>
               <input
                 type="password"
                 class="form-control mt-2"
@@ -104,6 +108,178 @@ block stylesheets %} {{ super() }}
             </form>
           </div>
         </section>
+        <div class="ln_solid"></div>
+        <p class="change_link">
+          Belum memiliki akun ?
+          <a href="#signup" class="to_register"> daftar disini </a>
+        </p>
+      </section>
+    </div>
+    <div id="register" class="animate form registration_form">
+      <section class="login_content">
+        <form
+          action="{{url_for('register')}}"
+          data-parsley-validate
+          method="post"
+          novalidate="novalidate"
+        >
+          <h1 class="mb-3">Buat Akun</h1>
+          <p>
+            Buat akun anda untuk menandatangani / melakukan permintaan
+            penandatanganan dokumen
+          </p>
+          <div>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Nama"
+              autofocus=""
+              required="required"
+              data-val="true"
+              data-val-required="Username harus diisi."
+              id="name"
+              name="name"
+              value=""
+            />
+          </div>
+          <span
+            class="help-block field-validation-valid"
+            data-valmsg-for="name"
+            data-valmsg-replace="true"
+          ></span>
+          <div>
+            <input
+              type="text"
+              class="form-control"
+              placeholder="NIM / NIDN"
+              required="required"
+              data-val="true"
+              data-val-required="NIM / NIDN harus diisi."
+              id="nomor"
+              name="nomor"
+              value=""
+            />
+          </div>
+          <span
+            class="help-block field-validation-valid"
+            data-valmsg-for="nomor"
+            data-valmsg-replace="true"
+          ></span>
+          <div>
+            <input
+              id="email"
+              type="email"
+              class="form-control"
+              placeholder="Email = @pelitabangsa.ac.id / @mhs.pelitabangsa.ac.id"
+              required="required"
+              data-val="true"
+              data-val-required="Email harus diisi."
+              name="email"
+              value=""
+              onkeyup="email_check();"
+            />
+          </div>
+          <span
+            class="help-block field-validation-valid"
+            data-valmsg-for="email"
+            data-valmsg-replace="true"
+            id="email-check"
+          ></span>
+          <div>
+            <input
+              type="password"
+              class="form-control"
+              placeholder="Password"
+              required="required"
+              name="password"
+              id="password"
+              data-val="true"
+              data-val-required="Password tidak boleh kosong."
+              value=""
+            />
+          </div>
+          <span
+            class="help-block field-validation-valid"
+            data-valmsg-for="email"
+            data-valmsg-replace="true"
+          ></span>
+          <div>
+            <input
+              onkeyup="check();"
+              type="password"
+              class="form-control"
+              placeholder="Confrim Password"
+              required="required"
+              name="confpassword"
+              id="confpassword"
+              data-val="true"
+              data-val-required="Password tidak boleh kosong."
+              value=""
+            />
+            <span id="message" class="mb-5"></span>
+          </div>
+          <div>
+            <button
+              class="btn btn-lg btn-primary btn-block submit"
+              id="register-submit"
+            >
+              Submit
+            </button>
+          </div>
+
+          <div class="clearfix"></div>
+
+          <div class="separator">
+            <p class="change_link">
+              Sudah punya Akun ?
+              <a href="#signin" class="to_register"> Log in </a>
+            </p>
+
+            <div class="clearfix"></div>
+            <br />
+          </div>
+        </form>
+        <script>
+          var email_check = function () {
+            var myemail = document.getElementById("email").value;
+
+            if (
+              /@mhs.pelitabangsa.ac.id\s*$/.test(myemail) ||
+              /@pelitabangsa.ac.id\s*$/.test(myemail)
+            ) {
+              // console.log("anda menggunakan email pelitabangsa");
+              document.getElementById("email-check").style.visibility =
+                "hidden";
+              // document.getElementById("email-check").innerHTML =
+              //   "Anda mengunakan email dari Pelita Bangsa";
+              const button = document.getElementById("register-submit");
+              button.disabled = false;
+            } else {
+              document.getElementById("email-check").style.color = "red";
+              document.getElementById("email-check").innerHTML =
+                "Anda harus mengunakan email dari Pelita Bangsa";
+              const button = document.getElementById("register-submit");
+              button.disabled = true;
+            }
+          };
+          var check = function () {
+            if (
+              document.getElementById("password").value ==
+              document.getElementById("confpassword").value
+            ) {
+              document.getElementById("message").style.visibility = "hidden";
+              document.getElementById("message").innerHTML = "matching";
+              const button = document.getElementById("register-submit");
+              button.disabled = false;
+            } else {
+              document.getElementById("message").style.color = "red";
+              document.getElementById("message").innerHTML =
+                "Password Harus Sama";
+              const button = document.getElementById("register-submit");
+              button.disabled = true;
+            }
+          };
+        </script>
       </section>
     </div>
   </div>

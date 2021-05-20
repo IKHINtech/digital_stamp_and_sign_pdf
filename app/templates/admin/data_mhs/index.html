@@ -127,7 +127,7 @@ block content %}
                       <th >Email</th>
                       <!-- <th >Photo</th> -->
                      
-                      <!-- <th >Action</th> -->
+                      <th >Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -143,8 +143,8 @@ block content %}
                         {% else %}
                         <img height="80" src="{{ url_for('static', filename='uploads/')}}{{i.p_profile}}" alt=""></td>
                       {% endif %} -->
-                      <!-- <td class="center"><a class="btn btn-primary" href="#">Edit</a>
-                        <a  class="btn btn-danger" href="{{url_for('delete_mahasiswa', id = i.id)}}">delete</a></td>-->
+                      <td class="center"><a class="btn btn-primary" href="#">Edit</a>
+                        <a  class="btn btn-danger" href="{{url_for('delete_mahasiswa', id = i.id)}}">delete</a></td>
                     </tr> 
                    {% endfor %}
                   </tbody>

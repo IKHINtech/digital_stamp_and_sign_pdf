@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, AnonymousUserMixin
 from app import app
 import hashlib
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -85,7 +86,7 @@ class User(UserMixin, db.Model):
     password_sertifikat = db.Column(db.String(128))
     password_hash = db.Column(db.String(128))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
-    # avatar_hash = db.Column(db.String(32))
+    confirmed = db.Column(db.Boolean, default=False)
     doc =  db.relationship('fileModel', backref='doc', lazy='dynamic')#child of doc
     skrip =  db.relationship('Skripsi', backref='skrip', lazy='dynamic')#child of doc
 
@@ -96,8 +97,22 @@ class User(UserMixin, db.Model):
                 self.role = Role.query.filter_by(name='Administrator').first()
             if self.role is None:
                 self.role = Role.query.filter_by(default_role_name=True).first()
-        # if self.email is not None and self.avatar_hash is None:
-        #     self.avatar_hash = self.gravatar_hash()
+
+    def generate_confirmation_token(self, expiration=3600):
+        s = Serializer(app.config['SECRET_KEY'], expiration)
+        return s.dumps({'confirm': self.id}).decode('utf-8')
+    
+    def confirm(self, token):
+        s = Serializer(app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token.encode('utf-8'))
+        except:
+            return False
+        if data.get('confirm') != self.id:
+            return False
+        self.confirmed = True
+        db.session.add(self)
+        return True
 
     @property
     def password(self):
@@ -109,15 +124,6 @@ class User(UserMixin, db.Model):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
-    
-    # def gravatar_hash(self):
-    #     return hashlib.md5(self.email.lower().encode('utf-8')).hexdigest()
-
-    # def gravatar(self, size=100, default='identicon', rating='g'):
-    #     url = 'https://secure.gravatar.com/avatar'
-    #     hash = self.avatar_hash or self.gravatar_hash()
-    #     return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
-    #         url=url, hash=hash, size=size, default=default, rating=rating)
 
     def can(self, perm):
         return self.role is not None and self.role.has_permission(perm)

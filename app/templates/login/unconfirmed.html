@@ -1,0 +1,22 @@
+{% extends "base_site.html" %} {% block title %} Unconfirmed {% endblock title
+%} {% block stylesheets %} {{ super() }} {% endblock stylesheets %} {% block
+sidebar %}{% endblock sidebar %} {% block top_navigation %}{% endblock
+top_navigation %} {% block content %}
+<div class="col-md-12">
+  <div class="col-middle">
+    <div class="text-center text-center">
+      <h1>Hello, {{ current_user.name }}!</h1>
+      <h3>You have not confirmed your account yet.</h3>
+      <p>
+        Before you can access this site you need to confirm your account. Check
+        your inbox, you should have received an email with a confirmation link.
+      </p>
+      <p>
+        Need another confirmation email?
+        <a href="{{ url_for('resend_confirmation') }}">Click here</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock content %} {% block footer %}{% endblock footer %} {% block
+javascripts %} {{ super() }} {% endblock javascripts %}

@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/fav.png') }}"
+      type="image/ico"
+    />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>UPB DigiSign | Tambah Lokasi Tanda Tangan</title>
@@ -31,7 +36,13 @@
         <!-- .sidebar-header -->
         <div class="sidebar-nav">
           <div
-            class="btn-group btn-group-rounded justify-content-center d-flex mt-4 mb-5"
+            class="
+              btn-group btn-group-rounded
+              justify-content-center
+              d-flex
+              mt-4
+              mb-5
+            "
             role="group"
           >
             <button
@@ -175,9 +186,9 @@
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h3 class="modal-title" id="exampleModalLabel">
+              <h4 class="modal-title" id="exampleModalLabel">
                 Apakah Anda Yakin Posisinya Sudah Pas ?
-              </h3>
+              </h4>
               <button
                 type="button"
                 class="close"

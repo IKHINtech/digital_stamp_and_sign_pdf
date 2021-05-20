@@ -63,9 +63,9 @@ content %}
                   <th>Nama Mahasiswa</th>
                   <th>Nama File</th>
                   <th>Tanggal Upload</th>
-                  <th>Dosen Penguji</th>
+                  <!-- <th>Dosen Penguji</th> -->
                   <th>Detail</th>
-                  <th>Action</th>
+                  <!-- <th>Action</th> -->
                 </tr>
               </thead>
 
@@ -79,7 +79,7 @@ content %}
                     {{ moment(i.date_upload).format('Do MMMM YYYY, h:mm:ss a')
                     }}
                   </td>
-                  <td>1. {{i.peng1 }}<br />2. {{i.peng2}}</td>
+                  <!-- <td>1. {{i.peng1 }}<br />2. {{i.peng2}}</td> -->
                   <td>
                     <a
                       href="{{ url_for('detail_skripsi', name=i.filename) }}"
@@ -87,13 +87,13 @@ content %}
                       >Detail</a
                     >
                   </td>
-                  <td>
+                  <!-- <td>
                     <a
                       href="{{ url_for('sign_skripsi', name=i.filename) }}"
                       class="btn btn-danger"
                       >Tanda Tangani</a
                     >
-                  </td>
+                  </td> -->
                 </tr>
                 {% endfor %}
               </tbody>

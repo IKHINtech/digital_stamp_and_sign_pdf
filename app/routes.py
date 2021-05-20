@@ -1,3 +1,8 @@
+import email
+from logging import log
+import re
+
+from sqlalchemy.sql.operators import notmatch_op
 from app import app,db, cors
 from flask import render_template, request, flash, redirect, url_for, send_file, make_response, jsonify, session, send_file
 from app.models.File import fileModel, SignTable, Skripsi, temp
@@ -10,9 +15,10 @@ from flask_cors import CORS, cross_origin
 from werkzeug.utils import secure_filename
 from config import Config
 from sqlalchemy import or_
+from app.mail import send_mail
 
 from app.models.Users import User, load_user, Permission
-from app.decorators import permission_required, admin_required
+from app.decorators import permission_required, admin_required, check_confirmed
 # from app.errors import forbidden, page_not_found, internal_server_error
 
 
@@ -58,6 +64,78 @@ def logout():
     # flash('You have been logged out.')
     return redirect(url_for('index'))
 
+@app.route('/register', methods=['POST'])
+def register():
+    if request.method == 'POST':
+        name = request.form['name']
+        nomor = request.form['nomor']
+        email =  request.form['email']
+        password = request.form['password']
+        if '@mhs.pelitabangsa.ac.id' in email:
+            try:
+                usermhs = User(name = name, nomor = nomor, email = email, password = password, role_id = 1)
+                db.session.add(usermhs)
+                db.session.commit()
+                token = usermhs.generate_confirmation_token()
+                confirm_url = url_for('confirm', token = token, _external=True)
+                html = render_template('/mail/activate.html', user= usermhs.name, nomor = usermhs.nomor, confirm_url = confirm_url)
+                send_mail(usermhs.email, 'Confirm Your Account', html)
+                # login_user(usermhs)
+                flash('A confirmation email has been sent to you by email.','success')
+                return redirect(url_for('login'))
+            except Exception as err:
+                flash(str(err), 'warning')
+                return redirect(url_for('login'))
+        elif '@pelitabangsa.ac.id' in email:
+            userdosen = User(name = name, nomor = nomor, email = email, password = password, role_id = 2)
+            db.session.add(userdosen)
+            db.session.commit()
+            token = userdosen.generate_confirmation_token()
+            confirm_url = url_for('confirm', token = token, _external=True)
+            html = render_template('/mail/activate.html', user= userdosen.name, nomor= userdosen.nomor, confirm_url = confirm_url)
+            send_mail(userdosen.email, 'Confirm Your Account', html)
+            flash('A confirmation email has been sent to you by email.','success')
+            # login_user(userdosen)
+            return redirect(url_for('login'))
+        else:
+            flash('Anda harus mengunakan email dari Pelita Bangsa', 'warning')
+            return redirect(url_for('login'))
+    return render_template('/login/login.html')
+    
+@app.route('/confirm/<token>')
+@login_required
+def confirm(token):
+    if current_user.confirmed:
+        return redirect(url_for('dashboard'))
+    if current_user.confirm(token):
+        db.session.commit()
+        flash('You have confirmed your account. Terima Kasih !','success')
+        return redirect(url_for('dashboard'))
+    else:
+        flash('The confirmation link is invalid or has expired.')
+        return redirect(url_for('login'))
+
+@app.route('/confirm')
+@login_required
+def resend_confirmation():
+    token = current_user.generate_confirmation_token()
+    confirm_url = url_for('confirm', token = token, _external=True)
+    html = render_template('/mail/activate.html', user= current_user.name, nomor = current_user.nomor, confirm_url = confirm_url)
+    send_mail(current_user.email, 'Confirm Your Account', html)
+    flash('A new confirmation email has been sent to you by email.')
+    return redirect(url_for('login'))
+
+@app.route('/unconfirmed')
+@login_required
+def unconfirmed():
+    if current_user.confirmed:
+        return redirect(url_for('dashboard'))
+    flash('Please confirm your account!', 'warning')
+    return render_template('/login/unconfirmed.html')
+
+
+
+
 # @app.before_request
 # def before_request():
 #     session.permanent = True
@@ -71,16 +149,22 @@ def index():
 
 @app.route('/dashboard')
 @login_required
+@check_confirmed
 def dashboard():
-    if current_user.can(8):
+    dosen = User.query.filter_by(role_id = 2).count()
+    file = data = Skripsi.query.filter_by(user_id = current_user.id).count()
+    data = Skripsi.query.filter(or_(Skripsi.peng1 == current_user.name, Skripsi.peng2==current_user.name, Skripsi.pem1==current_user.name, Skripsi.pem2 == current_user.name,
+                                        Skripsi.dekan == current_user.name, Skripsi.prodi == current_user.name)).count()
+    if current_user.can(8) and not current_user.can(Permission.ADMIN):
         if current_user.signature is None:
             flash('Lengkapi Profil anda dengan membuat tanda tangan pada menu Settings > Tanda tangan', 'danger')
         if current_user.sertifikat is None:
             flash('Lengkapi Profil anda dengan membuat sertifikat pada menu Settings > Sertifikat', 'danger')
-    return render_template('index.html')
+    return render_template('index.html', dosen = dosen, data = data, file = file)
 ##################  DOKUEMEN KONTROL  ############################
 @app.route('/delete/<id>')
 @login_required
+@check_confirmed
 def delete_file(id):
    data = fileModel.query.filter_by(id=id).first_or_404()
    try:
@@ -94,6 +178,7 @@ def delete_file(id):
 
 @app.route('/delete_sign/<id>')
 @login_required
+@check_confirmed
 def delete_sign(id):
     data = SignTable.query.filter_by(id=id).first_or_404()
     try:
@@ -188,6 +273,7 @@ def detail_file(id):
 
 @app.route('/detail_file_skripsi/<name>')
 @login_required
+@check_confirmed
 def detail_skripsi(name):
     data = Skripsi.query.filter_by(filename=name).first_or_404()
     if current_user.can(8):
@@ -205,6 +291,7 @@ def detail_sign_file(id):
 
 @app.route('/detail_skripsi_sign/<name>')
 @login_required
+@check_confirmed
 def detail_skripsi_sign(name):
     data = Skripsi.query.filter_by(filename=name).first_or_404()
     return render_template('/document/skripsi_sign.html', data = data)
@@ -217,6 +304,7 @@ def allowed_file_pdf(filename):
 
 @app.route('/upload', methods=['POST', 'GET'])
 @login_required
+@check_confirmed
 def upload_file():
     if request.method == 'POST':
         file = request.files['file']
@@ -251,6 +339,7 @@ def upload_file():
 
 @app.route('/upload_skripsi', methods=['POST','GET'])
 @login_required
+@check_confirmed
 def upload_skripsi():
     dosen = User.query.filter_by(role_id=2)
     prodi = User.query.filter_by(role_id=3)
@@ -295,11 +384,13 @@ def upload_skripsi():
 ################ 1 
 @app.route('/upload_skripsi_next_2/<name>', methods=['POST','GET'])
 @login_required
+@check_confirmed
 def upload_skripsi_n2(name):
     data = temp.query.filter_by(path = name ).first_or_404()
     return render_template('/upload/upload_skripsi_step_2.html', data = data)
 
 @app.route('/add_field1/<id>')
+@check_confirmed
 def add_field1(id):
     data = temp.query.filter_by(id = id ).first_or_404()
     path = os.path.join(app.config['TEMP_FILE'],data.path)
@@ -308,6 +399,7 @@ def add_field1(id):
     return render_template('/signature/add_field1.html', data = encoded_data, file = data)
 
 @app.route('/field1/<id>', methods=['POST', 'GET'])
+@check_confirmed
 def field1(id):
     data = temp.query.filter_by(id = id ).first_or_404()
     if request.method == 'POST':
@@ -334,11 +426,13 @@ def field1(id):
 ################ 2
 @app.route('/upload_skripsi_next_3/<name>', methods=['POST','GET'])
 @login_required
+@check_confirmed
 def upload_skripsi_n3(name):
     data = temp.query.filter_by(path = name ).first_or_404()
     return render_template('/upload/upload_skripsi_step_3.html', data = data)
 
 @app.route('/add_field2/<id>')
+@check_confirmed
 def add_field2(id):
     data = temp.query.filter_by(id = id ).first_or_404()
     fname = 'field1'+data.path
@@ -348,6 +442,7 @@ def add_field2(id):
     return render_template('/signature/add_field2.html', data = encoded_data, file = data)
 
 @app.route('/field2/<id>', methods=['POST', 'GET'])
+@check_confirmed
 def field2(id):
     if request.method == 'POST':
         x = request.form['x-post']
@@ -374,11 +469,13 @@ def field2(id):
 
 @app.route('/upload_skripsi_next_4/<name>', methods=['POST','GET'])
 @login_required
+@check_confirmed
 def upload_skripsi_n4(name):
     data = temp.query.filter_by(path = name ).first_or_404()
     return render_template('/upload/upload_skripsi_step_4.html', data = data)
 
 @app.route('/add_field3/<id>')
+@check_confirmed
 def add_field3(id):
     data = temp.query.filter_by(id = id ).first_or_404()
     fname = 'field2'+data.path
@@ -388,6 +485,7 @@ def add_field3(id):
     return render_template('/signature/add_field3.html', data = encoded_data, file = data)
 
 @app.route('/field3/<id>', methods=['POST', 'GET'])
+@check_confirmed
 def field3(id):
     if request.method == 'POST':
         x = request.form['x-post']
@@ -414,11 +512,13 @@ def field3(id):
 
 @app.route('/upload_skripsi_next_5/<name>', methods=['POST','GET'])
 @login_required
+@check_confirmed
 def upload_skripsi_n5(name):
     data = temp.query.filter_by(path = name ).first_or_404()
     return render_template('/upload/upload_skripsi_step_5.html', data = data)
 
 @app.route('/add_field4/<id>')
+@check_confirmed
 def add_field4(id):
     data = temp.query.filter_by(id = id ).first_or_404()
     fname = 'field3'+data.path
@@ -428,6 +528,7 @@ def add_field4(id):
     return render_template('/signature/add_field4.html', data = encoded_data, file = data)
 
 @app.route('/field4/<id>', methods=['POST', 'GET'])
+@check_confirmed
 def field4(id):
     if request.method == 'POST':
         x = request.form['x-post']
@@ -453,12 +554,14 @@ def field4(id):
 ############ 5
 
 @app.route('/upload_skripsi_next_6/<name>', methods=['POST','GET'])
+@check_confirmed
 @login_required
 def upload_skripsi_n6(name):
     data = temp.query.filter_by(path = name ).first_or_404()
     return render_template('/upload/upload_skripsi_step_6.html', data = data)
 
 @app.route('/add_field5/<id>')
+@check_confirmed
 def add_field5(id):
     data = temp.query.filter_by(id = id ).first_or_404()
     fname = 'field4'+data.path
@@ -468,6 +571,7 @@ def add_field5(id):
     return render_template('/signature/add_field5.html', data = encoded_data, file = data)
 
 @app.route('/field5/<id>', methods=['POST', 'GET'])
+@check_confirmed
 def field5(id):
     if request.method == 'POST':
         x = request.form['x-post']
@@ -493,12 +597,14 @@ def field5(id):
 ############ 6
 
 @app.route('/upload_skripsi_next_7/<name>', methods=['POST','GET'])
+@check_confirmed
 @login_required
 def upload_skripsi_n7(name):
     data = temp.query.filter_by(path = name ).first_or_404()
     return render_template('/upload/upload_skripsi_step_7.html', data = data)
 
 @app.route('/add_field6/<id>')
+@check_confirmed
 def add_field6(id):
     data = temp.query.filter_by(id = id ).first_or_404()
     fname = 'field5'+data.path
@@ -508,6 +614,7 @@ def add_field6(id):
     return render_template('/signature/add_field6.html', data = encoded_data, file = data)
 
 @app.route('/field6/<id>', methods=['POST', 'GET'])
+@check_confirmed
 def field6(id):
     if request.method == 'POST':
         x = request.form['x-post']
@@ -563,6 +670,7 @@ def field6(id):
 # SIGN PENGUJI 1
 @app.route('/sign_penguji_1/<id>', methods = ['POST','GET'])
 @login_required
+@check_confirmed
 @permission_required(Permission.SIGN)
 def sign_penguji_1(id):
     if request.method == "POST":
@@ -682,27 +790,32 @@ def sign_penguji_1(id):
 
 @app.route('/diupload')
 @login_required
+@check_confirmed
 def diupload():
     data = fileModel.query.filter_by(user_id = current_user.id)
     return render_template('/diupload/index.html', a = data )
 
 @app.route('/skripsi_diupload')
 @login_required
+@check_confirmed
 def skripsi_diupload():
     data = Skripsi.query.filter_by(user_id = current_user.id)
     return render_template('/diupload/skripsi.html', a = data )
 
 @app.route('/download_template')
 @login_required
+@check_confirmed
 def download_template():
    res = send_file(os.path.join(app.config['TEMPLATE_FOLDER'],'template.docx'), as_attachment= True)
    return res
 
 @app.route('/template')
+@check_confirmed
 def template():
     return render_template('/settings/template.html')
 
 @app.route('/upload_template', methods = ['POST', 'GET'])
+@check_confirmed
 def upload_template():
     if request.method == "POST":
         file = request.files['file']
@@ -719,11 +832,13 @@ def upload_template():
 
 #################  VALIDASI  ############################
 @app.route('/validity')
+@check_confirmed
 @login_required
 def valid_main():
     return render_template('/validity/validity.html')
 
 @app.route('/validity', methods = ['POST'])
+@check_confirmed
 @login_required
 def valid():
     cert_name = 'upb-root-new.crt'
@@ -809,6 +924,7 @@ def detail_dosen(namafile, namadosen,nama, date):
 
 @app.route('/permintaan', methods=['GET','POST'])
 @login_required
+@check_confirmed
 @permission_required(Permission.SIGN)
 def permintaan():
     a = SignTable.sign3
@@ -821,6 +937,7 @@ def permintaan():
 ########### permintaan
 @app.route('/permintaan_penguji_1', methods=['GET','POST'])
 @login_required
+@check_confirmed
 @permission_required(Permission.SIGN)
 def p_penguji_1():
     data = Skripsi.query.filter(and_(Skripsi.peng1 == current_user.name, Skripsi.peng1_date== None))
@@ -828,6 +945,7 @@ def p_penguji_1():
 
 @app.route('/permintaan_penguji_2', methods=['GET','POST'])
 @login_required
+@check_confirmed
 @permission_required(Permission.SIGN)
 def p_penguji_2():
     data = Skripsi.query.filter(and_(Skripsi.peng2 == current_user.name,Skripsi.peng1_sign==True))
@@ -835,6 +953,7 @@ def p_penguji_2():
 
 @app.route('/permintaan_pembimbing_1', methods=['GET','POST'])
 @login_required
+@check_confirmed
 @permission_required(Permission.SIGN)
 def p_pembimbing_1():
     data = Skripsi.query.filter((Skripsi.pem1 == current_user.name),(Skripsi.peng2_sign==True))
@@ -842,6 +961,7 @@ def p_pembimbing_1():
 
 @app.route('/permintaan_pembimbing_2', methods=['GET','POST'])
 @login_required
+@check_confirmed
 @permission_required(Permission.SIGN)
 def p_pembimbing_2():
     data = Skripsi.query.filter((Skripsi.pem2 == current_user.name),(Skripsi.pem1_sign==True))
@@ -849,6 +969,7 @@ def p_pembimbing_2():
 
 @app.route('/permintaan_prodi', methods=['GET','POST'])
 @login_required
+@check_confirmed
 @permission_required(Permission.SIGN)
 def p_prodi():
     data = Skripsi.query.filter((Skripsi.prodi == current_user.name),(Skripsi.pem2_sign==True))
@@ -856,6 +977,7 @@ def p_prodi():
 
 @app.route('/permintaan_dekan', methods=['GET','POST'])
 @login_required
+@check_confirmed
 @permission_required(Permission.SIGN)
 def p_dekan():
     data = Skripsi.query.filter((Skripsi.dekan == current_user.name),(Skripsi.prodi_sign== True))
@@ -863,6 +985,7 @@ def p_dekan():
 
 @app.route('/stamp1/<id>', methods=['GET','POST'])
 @login_required
+@check_confirmed
 @permission_required(Permission.SIGN)
 def stampOne(id):
     if request.method == "POST":
@@ -926,6 +1049,7 @@ def stampOne(id):
 
 @app.route('/sudah_ditandatangani', methods=['POST','GET'])
 @login_required
+@check_confirmed
 def sign_file():
     try:
         name = fileModel.query.filter(fileModel.id == SignTable.file_id)
@@ -941,6 +1065,7 @@ def sign_file():
 
 @app.route('/sudah_ditandatangani_dosen', methods=['POST','GET'])
 @login_required
+@check_confirmed
 def sign_file_all():
     try:
         file = fileModel.query.filter_by(user_id = current_user.id).first_or_404()
@@ -954,19 +1079,19 @@ def sign_file_all():
 
 @app.route('/skripsi_complette', methods=['POST','GET'])
 @login_required
+@check_confirmed
 def skripsi_complete():
     # try:
     data = Skripsi.query.filter(or_(Skripsi.peng1 == current_user.name, Skripsi.peng2==current_user.name, Skripsi.pem1==current_user.name, Skripsi.pem2 == current_user.name,
                                         Skripsi.dekan == current_user.name, Skripsi.prodi == current_user.name), (Skripsi.done == True))
-    # except Exception as err:
-    #     flash('Tidak ada data', 'warning')
-    #     return render_template('/ditandatangani/index_mhs.html')
-    return render_template('/ditandatangani/skripsi.html', data = data)
+    pro = Skripsi.query.filter_by(done = False)
+    return render_template('/ditandatangani/skripsi.html', data = data, a = pro)
 
 
 @app.route('/stamp2/<id>', methods=['GET','POST'])
 @permission_required(Permission.SIGN)
 @login_required
+@check_confirmed
 def stampTwo(id):
     if request.method == "POST":
         password = request.form['password']
@@ -1021,6 +1146,7 @@ def stampTwo(id):
 @app.route('/stamp3/<id>', methods=['GET','POST'])
 @permission_required(Permission.SIGN)
 @login_required
+@check_confirmed
 def stampThree(id):
     if request.method == "POST":
         password = request.form['password']
@@ -1088,6 +1214,7 @@ def stampThree(id):
 
 @app.route('/signature/<id>')
 @login_required
+@check_confirmed
 @permission_required(Permission.SIGN)
 def signature(id):
     data = User.query.filter_by(id=id).first_or_404()
@@ -1095,6 +1222,8 @@ def signature(id):
 
 @app.route('/uploadsign/<id>', methods=['POST','GET'])
 @permission_required(Permission.SIGN)
+@login_required
+@check_confirmed
 def upload_sign(id):
     if request.method =='POST':
         data = User.query.filter_by(id=id).first_or_404()
@@ -1117,6 +1246,7 @@ def upload_sign(id):
 ############################ ADMIN ######################################
 @app.route('/sertifikat/<id>', methods=['POST','GET'])
 @login_required
+@check_confirmed
 @permission_required(Permission.SIGN)
 def sertifikat(id):
     # TODO
@@ -1136,6 +1266,8 @@ def sertifikat(id):
         return render_template('/settings/sertifikat_null.html')
 
 @app.route('/create_sertifikat/<id>', methods=['POST','GET'])
+@login_required
+@check_confirmed
 def create_sertifikat(id):
     if request.method == 'POST':
         password = request.form['password']
@@ -1161,6 +1293,7 @@ def create_sertifikat(id):
 ############################ MAHASISWA ######################################
 @app.route('/admin/data_mahasiswa')
 @login_required
+@check_confirmed
 @permission_required(Permission.ADMIN)
 def all_mhs():
     mhs = User.query.filter_by(role_id=1)
@@ -1168,6 +1301,7 @@ def all_mhs():
 
 @app.route('/add/mhasiswa',methods=['POST','GET'])
 @login_required
+@check_confirmed
 @permission_required(Permission.ADMIN)
 def add_mhs():
     if request.method == 'POST':
@@ -1194,6 +1328,7 @@ def add_mhs():
 
 @app.route('/delete/mahasiswa/<id>')
 @login_required
+@check_confirmed
 @permission_required(Permission.ADMIN)
 def delete_mahasiswa(id):
    data = User.query.filter_by(id=id).first_or_404()
@@ -1205,7 +1340,7 @@ def delete_mahasiswa(id):
            path = os.path.join(app.config['UPLOAD_FOLDER'],file)
            os.remove(path)
        except Exception as err:
-           flash('Data Tidak Ada', 'warning')
+        #    flash('Data Tidak Ada', 'warning')
            return redirect(url_for('all_mhs'))
 
        flash('Data berhasil di hapus','success')
@@ -1217,6 +1352,7 @@ def delete_mahasiswa(id):
 ############################ DOSEN ######################################
 @app.route('/admin/data_dosen')
 @login_required
+@check_confirmed
 @permission_required(Permission.ADMIN)
 def all_dosen():
     dosen = User.query.filter_by(role_id=2)
@@ -1224,6 +1360,7 @@ def all_dosen():
 
 @app.route('/add/dosen',methods=['POST','GET'])
 @login_required
+@check_confirmed
 @permission_required(Permission.ADMIN)
 def add_dosen():
     if request.method == 'POST':
@@ -1258,6 +1395,7 @@ def add_dosen():
 
 @app.route('/delete/dosen/<id>')
 @login_required
+@check_confirmed
 @permission_required(Permission.ADMIN)
 def delete_dosen(id):
    data = User.query.filter_by(id=id).first_or_404()
@@ -1281,6 +1419,7 @@ def delete_dosen(id):
 #######################PRODI ########################################
 @app.route('/admin/data_prodi')
 @login_required
+@check_confirmed
 @permission_required(Permission.ADMIN)
 def all_prodi():
     prodi = User.query.filter_by(role_id=3)
@@ -1288,6 +1427,7 @@ def all_prodi():
 
 @app.route('/add/prodi',methods=['POST','GET'])
 @login_required
+@check_confirmed
 @permission_required(Permission.ADMIN)
 def add_prodi():
     if request.method == 'POST':
@@ -1324,6 +1464,7 @@ def add_prodi():
 ####################### DEKAN ########################################
 @app.route('/admin/data_dekan')
 @login_required
+@check_confirmed
 @permission_required(Permission.ADMIN)
 def all_dekan():
     prodi = User.query.filter_by(role_id=4)
@@ -1331,6 +1472,7 @@ def all_dekan():
 
 @app.route('/add/dekan',methods=['POST','GET'])
 @login_required
+@check_confirmed
 @permission_required(Permission.ADMIN)
 def add_dekan():
     if request.method == 'POST':
@@ -1364,6 +1506,8 @@ def add_dekan():
         return redirect(url_for('all_dekan'))
 
 @app.route('/profile/<id>')
+@login_required
+@check_confirmed
 def profile(id):
     data = User.query.filter_by(id=id).first_or_404()
     return render_template('/settings/profile.html', user = data)
@@ -1371,6 +1515,8 @@ def profile(id):
 
 ##################### USER #########################################
 @app.route('/changepassword/<id>', methods = ['POST','GET'])
+@login_required
+@check_confirmed
 def change_pw(id):
     if request.method == 'POST':
         user = User.query.filter_by(id=id).first_or_404()
@@ -1386,6 +1532,8 @@ def change_pw(id):
     return redirect(url_for('profile',id = id))
 
 @app.route('/changephoto/<id>', methods = ['POST','GET'])
+@login_required
+@check_confirmed
 def change_pp(id):
     if request.method == 'POST':
         user = User.query.filter_by(id=id).first_or_404()
@@ -1410,6 +1558,21 @@ def notif():
     data3 = SignTable.query.filter_by(sign3= None).count()
     data = data_2_perm + data_1_perm
     return jsonify({'total':data, 'prodi': data_3_perm})
+
+@app.route('/new_notif')
+def new_notif():
+    peng1 = Skripsi.query.filter(and_(Skripsi.peng1 == current_user.name, Skripsi.peng1_date== None)).count()
+    peng2 = Skripsi.query.filter(and_(Skripsi.peng2 == current_user.name,Skripsi.peng1_sign==True)).count()
+    pem1 = Skripsi.query.filter((Skripsi.pem1 == current_user.name),(Skripsi.peng2_sign==True)).count()
+    pem2 = Skripsi.query.filter((Skripsi.pem2 == current_user.name),(Skripsi.pem1_sign==True)).count()
+    prodi = Skripsi.query.filter((Skripsi.prodi == current_user.name),(Skripsi.pem2_sign==True)).count()
+    dekan = Skripsi.query.filter((Skripsi.dekan == current_user.name),(Skripsi.prodi_sign== True)).count()
+    return jsonify({'peng1':peng1,
+                    'peng2': peng2,
+                    'pem1':pem1,
+                    'pem2':pem2,
+                    'prodi':prodi,
+                    'dekan':dekan})
 
 @app.route('/verify_stamp/')
 def verify():
