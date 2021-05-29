@@ -80,7 +80,7 @@ def register():
                 confirm_url = url_for('confirm', token = token, _external=True)
                 html = render_template('/mail/activate.html', user= usermhs.name, nomor = usermhs.nomor, confirm_url = confirm_url)
                 send_mail(usermhs.email, 'Confirm Your Account', html)
-                # login_user(usermhs)
+                login_user(usermhs)
                 flash('A confirmation email has been sent to you by email.','success')
                 return redirect(url_for('login'))
             except Exception as err:
@@ -95,7 +95,7 @@ def register():
             html = render_template('/mail/activate.html', user= userdosen.name, nomor= userdosen.nomor, confirm_url = confirm_url)
             send_mail(userdosen.email, 'Confirm Your Account', html)
             flash('A confirmation email has been sent to you by email.','success')
-            # login_user(userdosen)
+            login_user(userdosen)
             return redirect(url_for('login'))
         else:
             flash('Anda harus mengunakan email dari Pelita Bangsa', 'warning')
@@ -118,11 +118,15 @@ def confirm(token):
 @app.route('/confirm')
 @login_required
 def resend_confirmation():
-    token = current_user.generate_confirmation_token()
-    confirm_url = url_for('confirm', token = token, _external=True)
-    html = render_template('/mail/activate.html', user= current_user.name, nomor = current_user.nomor, confirm_url = confirm_url)
-    send_mail(current_user.email, 'Confirm Your Account', html)
-    flash('A new confirmation email has been sent to you by email.')
+    try:
+        token = current_user.generate_confirmation_token()
+        confirm_url = url_for('confirm', token = token, _external=True)
+        html = render_template('/mail/activate.html', user= current_user.name, nomor = current_user.nomor, confirm_url = confirm_url)
+        send_mail(current_user.email, 'Confirm Your Account', html)
+        flash('A new confirmation email has been sent to you by email.')
+    except Exception as e:
+        flash(str(e), 'warning')
+        return redirect(url_for('login'))
     return redirect(url_for('login'))
 
 @app.route('/unconfirmed')

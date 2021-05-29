@@ -15,7 +15,7 @@ class Config(object):
         ['true', 'on', '1']
     MAIL_USE_SSL = False
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME', 'hrisaproject@gmail.com')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD','hrisati17d7')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD','gdlrwlyjnivdutyu')
 
     UPLOAD_FOLDER = os.path.join(basedir, "app/static/uploads/photos")
     UPLOAD_FILE = os.path.join(basedir, "app/static/uploads/pdf")

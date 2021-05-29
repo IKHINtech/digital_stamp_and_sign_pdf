@@ -4,4 +4,4 @@ JWT_SECRET = 'B1sm1ll4H'
 MAIL_SERVER=smtp.gmail.com
 MAIL_PORT=587
 MAIL_USERNAME=hrisaproject@gmail.com
-MAIL_PASSWORD=hrisati17d7
+MAIL_PASSWORD=gdlrwlyjnivdutyu
