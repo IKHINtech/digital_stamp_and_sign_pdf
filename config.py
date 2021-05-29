@@ -13,6 +13,7 @@ class Config(object):
     MAIL_PORT = int(os.environ.get('MAIL_PORT', '587'))
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS', 'true').lower() in \
         ['true', 'on', '1']
+    MAIL_USE_SSL = False
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME', 'hrisaproject@gmail.com')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD','hrisati17d7')
 

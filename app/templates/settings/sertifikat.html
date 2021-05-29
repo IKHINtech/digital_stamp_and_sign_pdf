@@ -1,4 +1,4 @@
-{% extends "base_site.html" %} {% block title %} Plain Page {% endblock title %}
+{% extends "base_site.html" %} {% block title %} Sertifikat {% endblock title %}
 {% block stylesheets %} {{ super() }} {% endblock stylesheets %} {% block
 content %}
 <div class="right_col" role="main">
@@ -69,9 +69,21 @@ content %}
           <div class="x_content">
             <div class="row">
               <a
-                class="btn btn-info"
+              {%
+                if cert is not none
+                %}
+                disabled="disabled"
+                {%
+                else
+                %}
+                
                 data-toggle="modal"
                 data-target=".bs-example-modal-md"
+                {%
+                endif
+                %}
+                class="btn btn-info"
+                
                 ><i class="fa fas-add m-right-xs"></i> Buat Sertifikat</a
               >
             </div>

@@ -130,7 +130,7 @@ def resend_confirmation():
 def unconfirmed():
     if current_user.confirmed:
         return redirect(url_for('dashboard'))
-    flash('Please confirm your account!', 'warning')
+    # flash('Please confirm your account!', 'warning')
     return render_template('/login/unconfirmed.html')
 
 
