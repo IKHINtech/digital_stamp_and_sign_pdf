@@ -21,7 +21,7 @@ content %}
         </div>
         {% endfor %}
       </div>
-      {% if current_user.role.name=='Dosen' %}
+      {% if current_user.can(8) %}
       <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
           <div class="x_title">

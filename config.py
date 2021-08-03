@@ -6,6 +6,7 @@ class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'B1sm1ll4H'
     SQLALCHEMY_DATABASE_URI = \
     'sqlite:///' + os.path.join(basedir, 'data.sqlite')
+        # 'mysql+pymysql://pelitaba_digisignupb:p3l1t4UPB@https://digisign.pelitabangsa.ac.id/phpMyAdmin/pelitaba_digisigndb?ssl=True'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     CORS_HEADERS = 'Content-Type'
 

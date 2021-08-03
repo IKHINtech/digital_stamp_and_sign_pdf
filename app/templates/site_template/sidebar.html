@@ -50,7 +50,7 @@
             <!-- <span id="notif" class="badge bg-red"></span> -->
           </a>
           <ul class="nav child_menu">
-            {% if current_user.role.name=='Dosen' %}
+            {% if current_user.can(8) %}
             <li>
               <a href="{{url_for('p_penguji_1')}}"
                 >Dosen Penguji 1 <span id="peng1" class="badge bg-red"></span
@@ -146,7 +146,7 @@
               <a href="{{url_for('profile', id = current_user.id)}}">Profile</a>
             </li>
             {% if current_user.role.name=='Administrator' %}
-            <li><a href="{{url_for('template')}}">Template</a></li>
+            <!-- <li><a href="{{url_for('template')}}">Template</a></li> -->
             {% endif %} {% if current_user.role.name =='Dosen' or
             current_user.role.name =='Prodi' or current_user.role.name =='Dekan'
             %}
@@ -175,7 +175,7 @@
             // console.log(data.total);
             // console.log(data.prodi);
             if (data.peng1 !== 0) {
-              {% if current_user.role.name=='Dosen' %}
+              {% if current_user.can(8) %}
               document.getElementById("peng1").innerHTML = data.peng1;
             }else if (data.peng2 !== 0) {
               document.getElementById("peng2").innerHTML = data.peng2;

@@ -1,6 +1,7 @@
 import email
 from logging import log
 import re
+from flask.signals import request_tearing_down
 
 from sqlalchemy.sql.operators import notmatch_op
 from app import app,db, cors
@@ -31,8 +32,27 @@ from pyhanko.sign.fields import SigFieldSpec, append_signature_field
 from pyhanko.pdf_utils.incremental_writer import IncrementalPdfFileWriter
 from pyhanko.sign import fields
 from pyhanko.sign.diff_analysis import (
-    SuspiciousModification, ModificationLevel, DEFAULT_DIFF_POLICY, DiffPolicy,
+    SuspiciousModification, ModificationLevel, DEFAULT_DIFF_POLICY,NO_CHANGES_DIFF_POLICY, DiffPolicy,
     DiffResult,
+)
+from pyhanko.sign.diff_analysis import FormUpdatingRule
+from pyhanko.sign.diff_analysis import SigFieldCreationRule
+from pyhanko.sign.diff_analysis import SigFieldModificationRule
+from pyhanko.sign.diff_analysis import GenericFieldModificationRule
+from pyhanko.sign.diff_analysis import StandardDiffPolicy
+
+
+
+MY_DIFF_POLICY = StandardDiffPolicy(
+    global_rules=[
+        
+    ],
+    form_rule=FormUpdatingRule(
+        field_rules=[
+            SigFieldCreationRule(), SigFieldModificationRule(),
+            GenericFieldModificationRule()
+        ],
+    )
 )
 #STAMP
 from app.PyHanko import buat_qr, create_sign, pretty, create_sign_new, create_field1, create_field2, create_field3, create_field4, create_field5, create_field6, create_field7
@@ -71,34 +91,29 @@ def register():
         nomor = request.form['nomor']
         email =  request.form['email']
         password = request.form['password']
-        if '@mhs.pelitabangsa.ac.id' in email:
-            try:
-                usermhs = User(name = name, nomor = nomor, email = email, password = password, role_id = 1)
-                db.session.add(usermhs)
-                db.session.commit()
-                token = usermhs.generate_confirmation_token()
-                confirm_url = url_for('confirm', token = token, _external=True)
-                html = render_template('/mail/activate.html', user= usermhs.name, nomor = usermhs.nomor, confirm_url = confirm_url)
-                send_mail(usermhs.email, 'Confirm Your Account', html)
-                login_user(usermhs)
-                flash('A confirmation email has been sent to you by email.','success')
+        try:
+            if '@pelitabangsa.ac.id' in email:
+                role_id = 2
+            elif '@mhs.pelitabangsa.ac.id' in email:
+                role_id = 1
+            else:
+                flash('Anda harus mengunakan email dari Pelita Bangsa', 'warning')
                 return redirect(url_for('login'))
-            except Exception as err:
-                flash(str(err), 'warning')
-                return redirect(url_for('login'))
-        elif '@pelitabangsa.ac.id' in email:
-            userdosen = User(name = name, nomor = nomor, email = email, password = password, role_id = 2)
-            db.session.add(userdosen)
+            user = User(name = name, nomor = nomor, email = email, password = password, role_id = role_id, confirmed = True)
+            db.session.add(user)
             db.session.commit()
-            token = userdosen.generate_confirmation_token()
+            ed = User.query.filter_by(nomor=nomor).first()
+            ed.role_id = role_id
+            db.session.commit()
+            login_user(user)
+            token = user.generate_confirmation_token()
             confirm_url = url_for('confirm', token = token, _external=True)
-            html = render_template('/mail/activate.html', user= userdosen.name, nomor= userdosen.nomor, confirm_url = confirm_url)
-            send_mail(userdosen.email, 'Confirm Your Account', html)
+            html = render_template('/mail/activate.html', user= user.name, nomor= user.nomor, confirm_url = confirm_url)
+            send_mail(user.email, 'Confirm Your Account', html)
             flash('A confirmation email has been sent to you by email.','success')
-            login_user(userdosen)
             return redirect(url_for('login'))
-        else:
-            flash('Anda harus mengunakan email dari Pelita Bangsa', 'warning')
+        except Exception as err:
+            flash(str(err), 'warning')
             return redirect(url_for('login'))
     return render_template('/login/login.html')
     
@@ -345,7 +360,7 @@ def upload_file():
 @login_required
 @check_confirmed
 def upload_skripsi():
-    dosen = User.query.filter_by(role_id=2)
+    dosen = User.query.filter((User.role_id >= 2 ))
     prodi = User.query.filter_by(role_id=3)
     dekan = User.query.filter_by(role_id=4)
     if request.method == "POST":
@@ -689,7 +704,7 @@ def sign_penguji_1(id):
         path_cert = os.path.join(app.config['CERTIFICATE'],cert)
         link = 'https://sign-stamp-pdf.herokuapp.com/sign/detail/'+data.filename+'/'+current_user.name+'/'+data.skrip.name+'/'+datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S %a')
         if password == current_user.password_sertifikat:
-            if current_user.name == data.peng1:
+            if current_user.name == data.peng1 and data.peng1_date == None:
                 try:
                     create_sign(path1, back_g, path_cert, path_key, password, link,
                                 'Signature1', 'Approval Skripsi', current_user.name
@@ -702,7 +717,7 @@ def sign_penguji_1(id):
                     print(err)
                     flash(str(err), 'warning')
                     return redirect(url_for('p_penguji_1'))
-            elif current_user.name == data.peng2:
+            elif current_user.name == data.peng2 and data.peng2_date == None:
                 try:
                     create_sign(path1, back_g, path_cert, path_key, password, link,
                                 'Signature2', 'Approval Skripsi', current_user.name
@@ -716,7 +731,7 @@ def sign_penguji_1(id):
                     print(err)
                     flash(str(err), 'warning')
                     return redirect(url_for('p_penguji_2'))
-            elif current_user.name == data.pem1:
+            elif current_user.name == data.pem1 and data.pem1_date == None:
                 try:
                     create_sign(path1, back_g, path_cert, path_key, password, link,
                                 'Signature3', 'Approval Skripsi', current_user.name
@@ -730,7 +745,7 @@ def sign_penguji_1(id):
                     print(err)
                     flash(str(err), 'warning')
                     return redirect(url_for('p_pembimbing_1'))
-            elif current_user.name == data.pem2:
+            elif current_user.name == data.pem2 and data.pem2_date == None:
                 try:
                     create_sign(path1, back_g, path_cert, path_key, password, link,
                                 'Signature4', 'Approval Skripsi', current_user.name
@@ -863,17 +878,17 @@ def valid():
             l = []
             sig = r.embedded_signatures
             for i, item in enumerate(sig):
-                status = validate_pdf_signature(item, vc)
+                status = validate_pdf_signature(item, vc, diff_policy=MY_DIFF_POLICY)
                 hasil  = pretty(status)
                 l.append(hasil)
-                a = status.signing_cert.subject.human_friendly
+                # a = status.signing_cert.subject.human_friendly
                 # x = type(l)
                 # return x
             return render_template('/validity/result.html', data =l, name = file.filename )
         except Exception as e:
             flash('dokumen tidak memiliki tanda tangan atau dokumen telah dimodifikasi', 'danger')
             return redirect(url_for('dashboard'))  
-        return render_template('/validity/result.html', data = hasil, a = a)
+    return render_template('index.html')
 
 @app.route('/validity_form', methods = ['POST'])
 def validity_form():
@@ -895,17 +910,21 @@ def validity_form():
             l = []
             sig = r.embedded_signatures
             for i, item in enumerate(sig):
-                status = validate_pdf_signature(item, vc)
+                status = validate_pdf_signature(item, vc, diff_policy=MY_DIFF_POLICY)
                 hasil  = pretty(status)
                 l.append(hasil)
-                a = status.signing_cert.subject.human_friendly
+                # a = status.signing_cert.subject.human_friendly
                 # x = type(l)
                 # return x
             return render_template('/validity/result_landing.html', data =l, name = file.filename )
         except Exception as e:
+            eee = e
             flash('dokumen tidak memiliki tanda tangan atau dokumen telah dimodifikasi', 'danger')
-            return render_template('/validity/result_landing.html', data =l, name = file.filename )
-        return render_template('/validity/result_landing.html', data = hasil, a = a)
+            return render_template('/validity/result_landing.html', e = eee, name = file.filename )
+    else:
+        flash('harap pilih file', 'warning')
+        return render_template('landing.html')
+    return render_template('landing.html')
 
 
 #################  DOSEN AREA  ############################
@@ -1379,7 +1398,7 @@ def add_dosen():
             return redirect(url_for('all_dosen'))
         # if photo:
         try:
-            up = User(name = name, nomor = nomor, email = email, p_profile= p_profile, password= nomor, role_id = role_id)
+            up = User(name = name, nomor = nomor, email = email, p_profile= p_profile, password= nomor, role_id = role_id, confirmed= True)
             db.session.add(up)
             db.session.commit()
             ed = User.query.filter_by(nomor=nomor).first()
